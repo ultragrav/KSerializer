@@ -59,12 +59,12 @@ open class JsonArray(initialSize: Int = 8) : JsonIndexable<Int> {
     override fun clear() = writeLocked { backingList.clear() }
 
 
-    private fun internalSet(key: Int, value: Any?) = writeLocked {
+    internal fun internalSet(key: Int, value: Any?) = writeLocked {
         growToAccommodate(key)
         backingList.set(key, value)
     }
 
-    private fun internalAdd(value: Any?, index: Int = -1) = writeLocked {
+    internal fun internalAdd(value: Any?, index: Int = -1) = writeLocked {
         if (index == -1)
             backingList.add(value)
         else

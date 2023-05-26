@@ -19,6 +19,10 @@ enum class TestEnum {
 }
 
 fun main() {
+    val testList = mutableListOf<String>()
+    testList.add(0, "Hello")
+    // Did you throw an exception?
+
     val test = TestWrapper(JsonObject())
 
     test.test = "Hello"
