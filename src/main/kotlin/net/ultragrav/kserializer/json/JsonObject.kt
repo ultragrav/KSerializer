@@ -2,7 +2,7 @@ package net.ultragrav.kserializer.json
 
 import java.util.concurrent.locks.ReentrantReadWriteLock
 
-open class JsonObject(initialCapacity: Int = 0) : JsonIndexable<String> {
+open class JsonObject(initialCapacity: Int = 8) : JsonIndexable<String> {
     internal val backingMap = LinkedHashMap<String, Any>(initialCapacity)
 
     val size get() = readLocked { backingMap.size }

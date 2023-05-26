@@ -2,8 +2,8 @@ package net.ultragrav.kserializer.json
 
 import java.util.concurrent.locks.ReentrantReadWriteLock
 
-open class JsonArray() : JsonIndexable<Int> {
-    internal val backingList: MutableList<Any?> = mutableListOf()
+open class JsonArray(initialSize: Int = 8) : JsonIndexable<Int> {
+    internal val backingList: MutableList<Any?> = ArrayList(initialSize)
 
     private val lock: ReentrantReadWriteLock = ReentrantReadWriteLock()
     private inline fun <T> readLocked(block: () -> T): T {
