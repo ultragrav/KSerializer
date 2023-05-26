@@ -53,8 +53,8 @@ object TinySerializer {
         when (type) {
             0 -> return null
             1 -> {
-                val obj = JsonObject()
                 val size = serializer.readInt()
+                val obj = JsonObject(size)
                 for (i in 0 until size) {
                     val key = serializer.readString()
                     val value = read(serializer) ?: continue
@@ -64,8 +64,8 @@ object TinySerializer {
             }
 
             2 -> {
-                val array = JsonArray()
                 val size = serializer.readInt()
+                val array = JsonArray(size)
                 for (i in 0 until size) {
                     val value = read(serializer) ?: continue
                     array.backingList.add(value)
