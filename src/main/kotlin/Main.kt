@@ -4,7 +4,7 @@ import net.ultragrav.kserializer.json.JsonObject
 
 class TestWrapper(data: JsonObject) : Wrapper(data) {
     var test by string()
-    var enum by enum(TestEnum::class)
+    var enum by enum<TestEnum>()
     val wrapper by wrapper(::OtherWrapper)
 }
 

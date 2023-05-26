@@ -4,7 +4,6 @@ import net.ultragrav.kserializer.json.JsonArray
 import net.ultragrav.kserializer.json.JsonIndexable
 import net.ultragrav.kserializer.json.JsonObject
 import net.ultragrav.kserializer.serialization.JsonDataSerializer
-import kotlin.reflect.KClass
 
 object Serializers {
     val STRING = object : JsonDataSerializer<String> {
@@ -119,14 +118,14 @@ object Serializers {
         }
     }
 
-    fun <T : Enum<T>> enum(clazz: KClass<T>): JsonDataSerializer<T> {
+    fun <T : Enum<T>> enum(clazz: Class<T>): JsonDataSerializer<T> {
         return object : JsonDataSerializer<T> {
             override fun <K> serialize(data: JsonIndexable<K>, key: K, value: T): Any? {
                 return data.setString(key, value.name)
             }
 
             override fun <K> deserialize(data: JsonIndexable<K>, key: K): T {
-                return java.lang.Enum.valueOf(clazz.java, data.getString(key))
+                return java.lang.Enum.valueOf(clazz, data.getString(key))
             }
 
             override fun serializeAdd(data: JsonArray, value: T, index: Int) {
