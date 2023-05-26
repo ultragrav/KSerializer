@@ -44,4 +44,28 @@ class JsonObject(initialCapacity: Int = 0) : JsonIndexable<String> {
     fun contains(key: String): Boolean {
         return backingMap.containsKey(key)
     }
+
+    override fun toString(): String {
+        // Convert to JSON string
+        val builder = StringBuilder()
+        builder.append("{")
+        var first = true
+        for ((key, value) in backingMap) {
+            if (!first) {
+                builder.append(",")
+            }
+            first = false
+            builder.append("\"$key\":")
+            when (value) {
+                is String -> builder.append("\"$value\"")
+                is JsonObject -> builder.append(value.toString())
+                is JsonArray -> builder.append(value.toString())
+                is Number -> builder.append(value.toString())
+                is Boolean -> builder.append(value.toString())
+                else -> throw IllegalArgumentException("Invalid value type: ${value::class.java}")
+            }
+        }
+        builder.append("}")
+        return builder.toString()
+    }
 }

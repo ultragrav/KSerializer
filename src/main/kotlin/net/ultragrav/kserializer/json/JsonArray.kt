@@ -72,4 +72,23 @@ class JsonArray() : JsonIndexable<Int> {
             backingList.add(null)
         }
     }
+
+    override fun toString(): String {
+        // Convert to JSON string
+        val builder = StringBuilder()
+        builder.append("[")
+        for (i in 0 until size) {
+            val value = backingList[i]
+            if (value == null) {
+                builder.append("null")
+            } else {
+                builder.append(value.toString())
+            }
+            if (i != size - 1) {
+                builder.append(",")
+            }
+        }
+        builder.append("]")
+        return builder.toString()
+    }
 }

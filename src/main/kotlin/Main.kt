@@ -14,8 +14,7 @@ class OtherWrapper(data: JsonObject) : Wrapper(data) {
 }
 
 enum class TestEnum {
-    TEST1,
-    TEST2
+    TEST1
 }
 
 fun main() {
@@ -23,6 +22,7 @@ fun main() {
 
     test.test = "Hello"
     test.wrapper.other = "World"
+    test.enum = TestEnum.TEST1
 
     println("${test.test} ${test.wrapper.other}")
     println(test.wrapper.other)
@@ -31,4 +31,6 @@ fun main() {
     test.wrapper.list.add("Hello")
 
     println(test.wrapper.list[0])
+
+    println(test.data)
 }
