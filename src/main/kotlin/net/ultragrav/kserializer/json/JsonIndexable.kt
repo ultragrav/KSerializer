@@ -9,4 +9,10 @@ interface JsonIndexable<T> {
 
     fun getArray(key: T): JsonArray
     fun setArray(key: T, array: JsonArray): Any?
+
+    fun getNumber(key: T): Number
+    fun setNumber(key: T, number: Number): Any?
+
+    fun getBoolean(key: T): Boolean
+    fun setBoolean(key: T, boolean: Boolean): Any?
 }

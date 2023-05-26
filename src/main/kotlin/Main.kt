@@ -1,7 +1,6 @@
 import net.ultragrav.kserializer.Serializers
-import net.ultragrav.kserializer.json.JsonObject
 import net.ultragrav.kserializer.Wrapper
-import net.ultragrav.kserializer.delegates.ListDelegate
+import net.ultragrav.kserializer.json.JsonObject
 
 class TestWrapper(data: JsonObject) : Wrapper(data) {
     var test by string()
@@ -10,7 +9,7 @@ class TestWrapper(data: JsonObject) : Wrapper(data) {
 }
 
 class OtherWrapper(data: JsonObject) : Wrapper(data) {
-    var other by string()
+    var other by string().cache()
     val list by list(Serializers.STRING)
 }
 
@@ -26,6 +25,7 @@ fun main() {
     test.wrapper.other = "World"
 
     println("${test.test} ${test.wrapper.other}")
+    println(test.wrapper.other)
 
 
     test.wrapper.list.add("Hello")

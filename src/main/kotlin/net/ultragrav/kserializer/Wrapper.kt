@@ -10,7 +10,7 @@ import kotlin.reflect.KClass
 abstract class Wrapper(internal val data: JsonObject) {
 
 
-    protected fun <T> serializer(ser: JsonDataSerializer<T>, key: String? = null): SerializerDelegate<T> {
+    protected fun <T : Any> serializer(ser: JsonDataSerializer<T>, key: String? = null): SerializerDelegate<T> {
         return SerializerDelegate(ser, key)
     }
     protected fun <T : Wrapper> wrapper(wrapperFactory: (JsonObject) -> T, key: String? = null): WrapperDelegate<T> {

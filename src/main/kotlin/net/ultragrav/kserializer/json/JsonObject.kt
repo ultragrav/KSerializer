@@ -16,6 +16,7 @@ class JsonObject(initialCapacity: Int = 0) : JsonIndexable<String> {
             lock.readLock().unlock()
         }
     }
+
     private inline fun <T> writeLocked(block: () -> T): T {
         try {
             lock.writeLock().lock()
@@ -25,26 +26,20 @@ class JsonObject(initialCapacity: Int = 0) : JsonIndexable<String> {
         }
     }
 
-    override fun getString(key: String): String {
-        readLocked { return backingMap[key] as String }
-    }
-    override fun setString(key: String, value: String): Any? {
-        writeLocked { return backingMap.put(key, value) }
-    }
+    override fun getString(key: String): String = readLocked { return backingMap[key] as String }
+    override fun setString(key: String, value: String): Any? = writeLocked { return backingMap.put(key, value) }
 
-    override fun getObject(key: String): JsonObject {
-        readLocked { return backingMap[key] as JsonObject }
-    }
-    override fun setObject(key: String, data: JsonObject): Any? {
-        writeLocked { return backingMap.put(key, data) }
-    }
+    override fun getObject(key: String): JsonObject = readLocked { return backingMap[key] as JsonObject }
+    override fun setObject(key: String, data: JsonObject): Any? = writeLocked { return backingMap.put(key, data) }
 
-    override fun getArray(key: String): JsonArray {
-        readLocked { return backingMap[key] as JsonArray }
-    }
-    override fun setArray(key: String, array: JsonArray): Any? {
-        writeLocked { return backingMap.put(key, array) }
-    }
+    override fun getArray(key: String): JsonArray = readLocked { return backingMap[key] as JsonArray }
+    override fun setArray(key: String, array: JsonArray): Any? = writeLocked { return backingMap.put(key, array) }
+
+    override fun getNumber(key: String): Number = readLocked { return backingMap[key] as Number }
+    override fun setNumber(key: String, number: Number): Any? = writeLocked { return backingMap.put(key, number) }
+
+    override fun getBoolean(key: String): Boolean = readLocked { return backingMap[key] as Boolean }
+    override fun setBoolean(key: String, boolean: Boolean): Any? = writeLocked { return backingMap.put(key, boolean) }
 
     fun contains(key: String): Boolean {
         return backingMap.containsKey(key)
