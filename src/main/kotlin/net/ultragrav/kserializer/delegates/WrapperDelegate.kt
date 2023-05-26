@@ -13,4 +13,9 @@ class WrapperDelegate<T : Wrapper>(val key: String, private val wrapperFactory: 
         }
         return cachedWrapper
     }
+
+    operator fun setValue(wrapper: Wrapper, property: KProperty<*>, value: T) {
+        cachedWrapper = value
+        wrapper.data.setData(key, value.data)
+    }
 }
