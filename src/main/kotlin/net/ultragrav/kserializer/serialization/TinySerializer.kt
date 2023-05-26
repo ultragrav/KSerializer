@@ -27,9 +27,18 @@ object TinySerializer {
             }
 
             is String -> {
-                serializer.writeInt(3)
+                serializer.writeByte(3)
                 serializer.writeString(data)
             }
+
+            is Number -> {
+                serializer.writeByte(4)
+                // TODO: don't always use double?
+                serializer.writeDouble(data.toDouble())
+            }
+
+            true -> serializer.writeByte(5)
+            false -> serializer.writeByte(6)
         }
     }
 
@@ -47,6 +56,7 @@ object TinySerializer {
                 }
                 return obj
             }
+
             2 -> {
                 val array = JsonArray()
                 val size = serializer.readInt()
@@ -56,9 +66,17 @@ object TinySerializer {
                 }
                 return array
             }
+
             3 -> {
                 return serializer.readString()
             }
+
+            4 -> {
+                return serializer.readDouble()
+            }
+
+            5 -> return true
+            6 -> return false
             else -> throw IllegalArgumentException("Unknown type: $type")
         }
     }
