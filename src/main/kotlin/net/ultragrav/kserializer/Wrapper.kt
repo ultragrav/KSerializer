@@ -3,6 +3,7 @@ package net.ultragrav.kserializer
 import net.ultragrav.kserializer.delegates.ListDelegate
 import net.ultragrav.kserializer.delegates.SerializerDelegate
 import net.ultragrav.kserializer.delegates.WrapperDelegate
+import net.ultragrav.kserializer.delegates.WrapperListDelegate
 import net.ultragrav.kserializer.json.JsonArray
 import net.ultragrav.kserializer.json.JsonObject
 import net.ultragrav.kserializer.serialization.JsonDataSerializer
@@ -18,6 +19,10 @@ abstract class Wrapper(val data: JsonObject) {
 
     protected fun <T> list(ser: JsonDataSerializer<T>, key: String? = null): ListDelegate<T> {
         return ListDelegate(ser, key)
+    }
+
+    protected fun <T : Wrapper> list(wrapperFactory: (JsonObject) -> T, key: String? = null): WrapperListDelegate<T> {
+        return WrapperListDelegate(wrapperFactory, key)
     }
 
     protected inline fun <reified T : Enum<T>> enum(key: String? = null): SerializerDelegate<T> {
