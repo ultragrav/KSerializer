@@ -1,6 +1,6 @@
 package net.ultragrav.kserializer.delegates
 
-import net.ultragrav.kserializer.JsonDataSerializer
+import net.ultragrav.kserializer.serialization.JsonDataSerializer
 import net.ultragrav.kserializer.Wrapper
 import kotlin.reflect.KProperty
 
