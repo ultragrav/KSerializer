@@ -78,11 +78,14 @@ class JsonArray() : JsonIndexable<Int> {
         val builder = StringBuilder()
         builder.append("[")
         for (i in 0 until size) {
-            val value = backingList[i]
-            if (value == null) {
-                builder.append("null")
-            } else {
-                builder.append(value.toString())
+            when (val value = backingList[i]) {
+                null -> builder.append("null")
+                is String -> builder.append("\"$value\"")
+                is JsonObject -> builder.append(value.toString())
+                is JsonArray -> builder.append(value.toString())
+                is Number -> builder.append(value.toString())
+                is Boolean -> builder.append(value.toString())
+                else -> throw IllegalArgumentException("Invalid value type: ${value::class.java}")
             }
             if (i != size - 1) {
                 builder.append(",")
