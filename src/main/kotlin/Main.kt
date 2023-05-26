@@ -23,14 +23,7 @@ fun main() {
     test.test = "Hello"
     test.wrapper.other = "World"
     test.enum = TestEnum.TEST1
-
-    println("${test.test} ${test.wrapper.other}")
-    println(test.wrapper.other)
-
-
     test.wrapper.list.add("Hello")
-
-    println(test.wrapper.list[0])
 
     println(test.data)
 }
