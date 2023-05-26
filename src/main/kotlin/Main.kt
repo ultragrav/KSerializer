@@ -4,13 +4,13 @@ import net.ultragrav.kserializer.Wrapper
 import net.ultragrav.kserializer.delegates.ListDelegate
 
 class TestWrapper(data: JsonObject) : Wrapper(data) {
-    var test by string("test")
-    val wrapper by wrapper("wrapper", ::OtherWrapper)
+    var test by string()
+    val wrapper by wrapper(::OtherWrapper)
 }
 
 class OtherWrapper(data: JsonObject) : Wrapper(data) {
-    var other by string("other")
-    val list by ListDelegate("list", Serializers.STRING)
+    var other by string()
+    val list by list(Serializers.STRING)
 }
 
 fun main() {

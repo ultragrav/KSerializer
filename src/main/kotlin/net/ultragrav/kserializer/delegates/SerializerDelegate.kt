@@ -4,12 +4,12 @@ import net.ultragrav.kserializer.serialization.JsonDataSerializer
 import net.ultragrav.kserializer.Wrapper
 import kotlin.reflect.KProperty
 
-class SerializerDelegate<T>(val key: String, val serializer: JsonDataSerializer<T>) {
+class SerializerDelegate<T>(val serializer: JsonDataSerializer<T>, val key: String? = null) {
     operator fun getValue(wrapper: Wrapper, property: KProperty<*>): T {
-        return serializer.deserialize(wrapper.data, key)
+        return serializer.deserialize(wrapper.data, key ?: property.name)
     }
 
     operator fun setValue(wrapper: Wrapper, property: KProperty<*>, value: T) {
-        serializer.serialize(wrapper.data, key, value)
+        serializer.serialize(wrapper.data, key ?: property.name, value)
     }
 }
