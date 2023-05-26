@@ -1,5 +1,7 @@
 package net.ultragrav.kserializer
 
+import net.ultragrav.kserializer.delegates.SerializerDelegate
+
 object Serializers {
     val STRING = object : JsonDataSerializer<String> {
         override fun serialize(data: JsonData, key: String, value: String) {

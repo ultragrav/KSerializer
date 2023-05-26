@@ -2,7 +2,12 @@ import net.ultragrav.kserializer.JsonData
 import net.ultragrav.kserializer.Wrapper
 
 class TestWrapper(data: JsonData) : Wrapper(data) {
-    val test by string("test")
+    var test by string("test")
+    val wrapper by wrapper("wrapper", ::OtherWrapper)
+}
+
+class OtherWrapper(data: JsonData) : Wrapper(data) {
+    var other by string("other")
 }
 
 fun main(args: Array<String>) {
