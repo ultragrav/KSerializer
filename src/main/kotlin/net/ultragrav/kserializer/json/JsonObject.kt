@@ -26,23 +26,31 @@ open class JsonObject(initialCapacity: Int = 8) : JsonIndexable<String> {
         }
     }
 
-    override fun getString(key: String): String = readLocked { return backingMap[key] as String }
-    override fun setString(key: String, value: String): Any? = writeLocked { return backingMap.put(key, value) }
+    protected open fun <T : Any> internalSet(key: String, obj: T): Any? =
+        writeLocked { return backingMap.put(key, obj) }
 
-    override fun getObject(key: String): JsonObject = readLocked { return backingMap[key] as JsonObject }
-    override fun setObject(key: String, data: JsonObject): Any? = writeLocked { return backingMap.put(key, data) }
+    protected open fun <T : Any> internalGet(key: String): T {
+        @Suppress("UNCHECKED_CAST")
+        return readLocked { backingMap[key] as T }
+    }
 
-    override fun getArray(key: String): JsonArray = readLocked { return backingMap[key] as JsonArray }
-    override fun setArray(key: String, array: JsonArray): Any? = writeLocked { return backingMap.put(key, array) }
+    override fun getString(key: String): String = internalGet(key)
+    override fun setString(key: String, value: String): Any? = internalSet(key, value)
 
-    override fun getNumber(key: String): Number = readLocked { return backingMap[key] as Number }
-    override fun setNumber(key: String, number: Number): Any? = writeLocked { return backingMap.put(key, number) }
+    override fun getObject(key: String): JsonObject = internalGet(key)
+    override fun setObject(key: String, data: JsonObject): Any? = internalSet(key, data)
 
-    override fun getBoolean(key: String): Boolean = readLocked { return backingMap[key] as Boolean }
-    override fun setBoolean(key: String, boolean: Boolean): Any? = writeLocked { return backingMap.put(key, boolean) }
+    override fun getArray(key: String): JsonArray = internalGet(key)
+    override fun setArray(key: String, array: JsonArray): Any? = internalSet(key, array)
 
-    override fun getByteArray(key: String): ByteArray = readLocked { return backingMap[key] as ByteArray }
-    override fun setByteArray(key: String, byteArray: ByteArray): Any? = writeLocked { return backingMap.put(key, byteArray) }
+    override fun getNumber(key: String): Number = internalGet(key)
+    override fun setNumber(key: String, number: Number): Any? = internalSet(key, number)
+
+    override fun getBoolean(key: String): Boolean = internalGet(key)
+    override fun setBoolean(key: String, boolean: Boolean): Any? = internalSet(key, boolean)
+
+    override fun getByteArray(key: String): ByteArray = internalGet(key)
+    override fun setByteArray(key: String, byteArray: ByteArray): Any? = internalSet(key, byteArray)
 
     fun contains(key: String): Boolean {
         return backingMap.containsKey(key)
