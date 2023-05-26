@@ -5,12 +5,18 @@ import net.ultragrav.kserializer.delegates.ListDelegate
 
 class TestWrapper(data: JsonObject) : Wrapper(data) {
     var test by string()
+    var enum by enum(TestEnum::class)
     val wrapper by wrapper(::OtherWrapper)
 }
 
 class OtherWrapper(data: JsonObject) : Wrapper(data) {
     var other by string()
     val list by list(Serializers.STRING)
+}
+
+enum class TestEnum {
+    TEST1,
+    TEST2
 }
 
 fun main() {
