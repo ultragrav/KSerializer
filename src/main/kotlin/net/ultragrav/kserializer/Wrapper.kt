@@ -26,4 +26,19 @@ abstract class Wrapper(internal val data: JsonObject) {
     protected fun string(key: String? = null): SerializerDelegate<String> {
         return serializer(Serializers.STRING, key)
     }
+    protected fun int(key: String? = null): SerializerDelegate<Int> {
+        return serializer(Serializers.INT, key)
+    }
+    protected fun long(key: String? = null): SerializerDelegate<Long> {
+        return serializer(Serializers.LONG, key)
+    }
+    protected fun double(key: String? = null): SerializerDelegate<Double> {
+        return serializer(Serializers.DOUBLE, key)
+    }
+    protected fun float(key: String? = null): SerializerDelegate<Float> {
+        return serializer(Serializers.FLOAT, key)
+    }
+    protected fun boolean(key: String? = null): SerializerDelegate<Boolean> {
+        return serializer(Serializers.BOOLEAN, key)
+    }
 }

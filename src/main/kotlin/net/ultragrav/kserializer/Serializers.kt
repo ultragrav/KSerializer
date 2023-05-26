@@ -20,6 +20,77 @@ object Serializers {
             data.addString(value, index)
         }
     }
+
+    val INT = object : JsonDataSerializer<Int> {
+        override fun <K> serialize(data: JsonIndexable<K>, key: K, value: Int): Any? {
+            return data.setNumber(key, value)
+        }
+
+        override fun <K> deserialize(data: JsonIndexable<K>, key: K): Int {
+            return data.getNumber(key).toInt()
+        }
+
+        override fun serializeAdd(data: JsonArray, value: Int, index: Int) {
+            data.addNumber(value, index)
+        }
+    }
+
+    val LONG = object : JsonDataSerializer<Long> {
+        override fun <K> serialize(data: JsonIndexable<K>, key: K, value: Long): Any? {
+            return data.setNumber(key, value)
+        }
+
+        override fun <K> deserialize(data: JsonIndexable<K>, key: K): Long {
+            return data.getNumber(key).toLong()
+        }
+
+        override fun serializeAdd(data: JsonArray, value: Long, index: Int) {
+            data.addNumber(value, index)
+        }
+    }
+
+    val DOUBLE = object : JsonDataSerializer<Double> {
+        override fun <K> serialize(data: JsonIndexable<K>, key: K, value: Double): Any? {
+            return data.setNumber(key, value)
+        }
+
+        override fun <K> deserialize(data: JsonIndexable<K>, key: K): Double {
+            return data.getNumber(key).toDouble()
+        }
+
+        override fun serializeAdd(data: JsonArray, value: Double, index: Int) {
+            data.addNumber(value, index)
+        }
+    }
+
+    val FLOAT = object : JsonDataSerializer<Float> {
+        override fun <K> serialize(data: JsonIndexable<K>, key: K, value: Float): Any? {
+            return data.setNumber(key, value)
+        }
+
+        override fun <K> deserialize(data: JsonIndexable<K>, key: K): Float {
+            return data.getNumber(key).toFloat()
+        }
+
+        override fun serializeAdd(data: JsonArray, value: Float, index: Int) {
+            data.addNumber(value, index)
+        }
+    }
+
+    val BOOLEAN = object : JsonDataSerializer<Boolean> {
+        override fun <K> serialize(data: JsonIndexable<K>, key: K, value: Boolean): Any? {
+            return data.setBoolean(key, value)
+        }
+
+        override fun <K> deserialize(data: JsonIndexable<K>, key: K): Boolean {
+            return data.getBoolean(key)
+        }
+
+        override fun serializeAdd(data: JsonArray, value: Boolean, index: Int) {
+            data.addBoolean(value, index)
+        }
+    }
+
     val JSON_OBJECT = object : JsonDataSerializer<JsonObject> {
         override fun <K> serialize(data: JsonIndexable<K>, key: K, value: JsonObject): Any? {
             return data.setObject(key, value)
@@ -33,6 +104,7 @@ object Serializers {
             data.addObject(value, index)
         }
     }
+
     val JSON_ARRAY = object : JsonDataSerializer<JsonArray> {
         override fun <K> serialize(data: JsonIndexable<K>, key: K, value: JsonArray): Any? {
             return data.setArray(key, value)
