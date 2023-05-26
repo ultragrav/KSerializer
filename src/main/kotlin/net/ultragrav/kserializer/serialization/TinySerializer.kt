@@ -39,6 +39,12 @@ object TinySerializer {
 
             true -> serializer.writeByte(5)
             false -> serializer.writeByte(6)
+
+            is ByteArray -> {
+                serializer.writeByte(7)
+                serializer.writeInt(data.size)
+                serializer.append(data)
+            }
         }
     }
 
@@ -77,6 +83,10 @@ object TinySerializer {
 
             5 -> return true
             6 -> return false
+            7 -> {
+                val size = serializer.readInt()
+                return serializer.readBytes(size)
+            }
             else -> throw IllegalArgumentException("Unknown type: $type")
         }
     }

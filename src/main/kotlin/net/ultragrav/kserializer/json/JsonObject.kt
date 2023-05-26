@@ -2,7 +2,7 @@ package net.ultragrav.kserializer.json
 
 import java.util.concurrent.locks.ReentrantReadWriteLock
 
-class JsonObject(initialCapacity: Int = 0) : JsonIndexable<String> {
+open class JsonObject(initialCapacity: Int = 0) : JsonIndexable<String> {
     internal val backingMap = LinkedHashMap<String, Any>(initialCapacity)
 
     val size get() = readLocked { backingMap.size }
@@ -40,6 +40,9 @@ class JsonObject(initialCapacity: Int = 0) : JsonIndexable<String> {
 
     override fun getBoolean(key: String): Boolean = readLocked { return backingMap[key] as Boolean }
     override fun setBoolean(key: String, boolean: Boolean): Any? = writeLocked { return backingMap.put(key, boolean) }
+
+    override fun getByteArray(key: String): ByteArray = readLocked { return backingMap[key] as ByteArray }
+    override fun setByteArray(key: String, byteArray: ByteArray): Any? = writeLocked { return backingMap.put(key, byteArray) }
 
     fun contains(key: String): Boolean {
         return backingMap.containsKey(key)

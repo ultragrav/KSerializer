@@ -15,4 +15,7 @@ interface JsonIndexable<T> {
 
     fun getBoolean(key: T): Boolean
     fun setBoolean(key: T, boolean: Boolean): Any?
+
+    fun getByteArray(key: T): ByteArray
+    fun setByteArray(key: T, byteArray: ByteArray): Any?
 }

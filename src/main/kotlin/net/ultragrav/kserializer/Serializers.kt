@@ -118,6 +118,20 @@ object Serializers {
         }
     }
 
+    val BYTE_ARRAY = object : JsonDataSerializer<ByteArray> {
+        override fun <K> serialize(data: JsonIndexable<K>, key: K, value: ByteArray): Any? {
+            return data.setByteArray(key, value)
+        }
+
+        override fun <K> deserialize(data: JsonIndexable<K>, key: K): ByteArray {
+            return data.getByteArray(key)
+        }
+
+        override fun serializeAdd(data: JsonArray, value: ByteArray, index: Int) {
+            data.addByteArray(value, index)
+        }
+    }
+
     fun <T : Enum<T>> enum(clazz: Class<T>): JsonDataSerializer<T> {
         return object : JsonDataSerializer<T> {
             override fun <K> serialize(data: JsonIndexable<K>, key: K, value: T): Any? {

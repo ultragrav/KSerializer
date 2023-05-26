@@ -55,4 +55,8 @@ abstract class Wrapper(val data: JsonObject) {
     protected fun boolean(key: String? = null): SerializerDelegate<Boolean> {
         return serializer(Serializers.BOOLEAN, key)
     }
+
+    protected fun byteArray(key: String? = null): SerializerDelegate<ByteArray> {
+        return serializer(Serializers.BYTE_ARRAY, key)
+    }
 }
