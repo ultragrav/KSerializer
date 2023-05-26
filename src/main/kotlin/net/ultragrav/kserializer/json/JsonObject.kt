@@ -56,6 +56,10 @@ open class JsonObject(initialCapacity: Int = 8) : JsonIndexable<String> {
         return backingMap.containsKey(key)
     }
 
+    override fun remove(key: String): Any? = writeLocked { backingMap.remove(key) }
+
+    override fun clear() = writeLocked { backingMap.clear() }
+
     override fun toString(): String {
         // Convert to JSON string
         val builder = StringBuilder()

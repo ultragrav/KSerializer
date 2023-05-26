@@ -18,4 +18,7 @@ interface JsonIndexable<T> {
 
     fun getByteArray(key: T): ByteArray
     fun setByteArray(key: T, byteArray: ByteArray): Any?
+
+    fun remove(key: T): Any?
+    fun clear()
 }

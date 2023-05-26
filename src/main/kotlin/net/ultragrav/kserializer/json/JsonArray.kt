@@ -54,9 +54,9 @@ open class JsonArray(initialSize: Int = 8) : JsonIndexable<Int> {
     override fun setByteArray(key: Int, byteArray: ByteArray): Any? = internalSet(key, byteArray)
     fun addByteArray(byteArray: ByteArray, index: Int = -1) = internalAdd(byteArray, index)
 
-    fun remove(index: Int) = writeLocked { backingList.removeAt(index) }
+    override fun remove(key: Int) = writeLocked { backingList.removeAt(key) }
 
-    fun clear() = writeLocked { backingList.clear() }
+    override fun clear() = writeLocked { backingList.clear() }
 
 
     private fun internalSet(key: Int, value: Any?) = writeLocked {
