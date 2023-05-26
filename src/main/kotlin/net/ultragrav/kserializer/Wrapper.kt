@@ -7,9 +7,7 @@ import net.ultragrav.kserializer.json.JsonObject
 import net.ultragrav.kserializer.serialization.JsonDataSerializer
 import kotlin.reflect.KClass
 
-abstract class Wrapper(internal val data: JsonObject) {
-
-
+abstract class Wrapper(val data: JsonObject) {
     protected fun <T : Any> serializer(ser: JsonDataSerializer<T>, key: String? = null): SerializerDelegate<T> {
         return SerializerDelegate(ser, key)
     }
