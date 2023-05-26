@@ -8,9 +8,12 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
+    maven("https://mvn.ultragrav.net/")
 }
 
 dependencies {
+    api("net.ultragrav", "Serializer", "1.2.15")
+
     testImplementation(kotlin("test"))
 }
 
