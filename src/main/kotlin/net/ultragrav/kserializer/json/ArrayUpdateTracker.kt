@@ -11,16 +11,10 @@ class ArrayUpdateTracker {
         var index = updates.size - 1
         while (index > 0 && updates[index].shouldCommute(updates[index - 1])) {
             val commuted = updates[index].commute(updates[index - 1])
-            if (commuted.first == null && commuted.second == null) {
-                updates.removeAt(index)
-                updates.removeAt(index - 1)
-                return update // We're done, our operation is gone, and our life is ruined
-            } else if (commuted.second == null) {
-                updates.removeAt(index - 1)
-                updates[index - 1] = commuted.first!!
-            } else {
-                updates[index - 1] = commuted.first!!
-                updates[index] = commuted.second!!
+            updates.subList(index - 1, index + 1).let {
+                it.clear()
+                if (commuted.isEmpty()) return@update update
+                it.addAll(commuted)
             }
             index--
         }
@@ -43,7 +37,7 @@ class ArrayUpdateTracker {
         }
 
         abstract fun apply(array: JsonArray)
-        abstract fun commute(other: Update): Pair<Update?, Update?>
+        abstract fun commute(other: Update): List<Update>
     }
 
     internal class AddUpdate(index: Int, val value: Any?) : Update(index) {
@@ -51,19 +45,18 @@ class ArrayUpdateTracker {
             array.internalAdd(value, index)
         }
 
-        override fun commute(other: Update): Pair<Update?, Update?> {
+        override fun commute(other: Update): List<Update> {
             if (other is SetUpdate) {
-                if (other.index < index) return Pair(this, other)
-                return Pair(this, SetUpdate(other.index + 1, other.value))
+                if (other.index < index) return listOf(this, other)
+                return listOf(this, SetUpdate(other.index + 1, other.value))
             }
             if (other is AddUpdate) {
-                if (other.index < index) return Pair(this, other)
-                return Pair(this, AddUpdate(other.index + 1, other.value))
+                if (other.index < index) return listOf(this, other)
+                return listOf(this, AddUpdate(other.index + 1, other.value))
             }
             if (other is RemoveUpdate) {
-                if (other.index < index) return Pair(this, other)
-                if (other.index == index) return Pair(SetUpdate(other.index, value), null)
-                return Pair(this, RemoveUpdate(other.index + 1))
+                if (other.index < index) throw IllegalStateException("Unreachable")
+                return listOf(this, RemoveUpdate(other.index + 1, other.count))
             }
             throw IllegalStateException("Invalid update type!")
         }
@@ -73,37 +66,46 @@ class ArrayUpdateTracker {
         }
     }
 
-    internal class RemoveUpdate(index: Int) : Update(index) {
+    internal class RemoveUpdate(index: Int, val count: Int = 1) : Update(index) {
         override fun apply(array: JsonArray) {
-            array.remove(index)
+            if (count == 1) {
+                array.remove(index)
+            } else {
+                array.backingList.subList(index, index + count).clear()
+            }
         }
 
-        override fun shouldCommute(other: Update): Boolean {
-            if (other is RemoveUpdate) return index < other.index
-            return super.shouldCommute(other)
-        }
-
-        override fun commute(other: Update): Pair<Update?, Update?> {
+        override fun commute(other: Update): List<Update> {
             if (other is SetUpdate) {
-                if (other.index == index) return Pair(this, null)
-                if (other.index < index) return Pair(this, other)
-                return Pair(this, SetUpdate(other.index - 1, other.value))
+                if (other.index < index) return listOf(this, other)
+                if (other.index < index + count) return listOf(this)
+                return listOf(this, SetUpdate(other.index - count, other.value))
             }
             if (other is AddUpdate) {
-                if (other.index < index) return Pair(this, other)
-                if (other.index == index) return Pair(null, null)
-//                if (other.index == index + 1) return Pair(SetUpdate(index, other.value), null)
-                return Pair(this, AddUpdate(other.index - 1, other.value))
+                if (other.index < index) return listOf(this, other)
+                if (other.index < index + count) return listOf(RemoveUpdate(index, count - 1))
+                if (other.index == index + count) {
+                    return if (count == 1) {
+                        listOf(SetUpdate(index, other.value))
+                    } else {
+                        listOf(RemoveUpdate(index, count - 1), SetUpdate(index, other.value))
+                    }
+                }
+                return listOf(this, AddUpdate(other.index - count, other.value))
             }
             if (other is RemoveUpdate) {
-                if (other.index < index) return Pair(this, other)
-                return Pair(this, RemoveUpdate(other.index - 1))
+                if (other.index >= index && other.index <= index + count) {
+                    val newCount = count + other.count
+                    return listOf(RemoveUpdate(index, newCount))
+                }
+                if (other.index < index) return listOf(this, other) // Unreachable
+                return listOf(this, RemoveUpdate(other.index - count, other.count))
             }
             throw IllegalStateException("Invalid update type!")
         }
 
         override fun toString(): String {
-            return "RemoveUpdate(index=$index)"
+            return "RemoveUpdate(index=$index, count=$count)"
         }
     }
 
@@ -117,19 +119,19 @@ class ArrayUpdateTracker {
             return super.shouldCommute(other)
         }
 
-        override fun commute(other: Update): Pair<Update?, Update?> {
+        override fun commute(other: Update): List<Update> {
             if (other is SetUpdate) {
-                if (other.index == index) return Pair(this, null)
-                return Pair(this, other)
+                if (other.index == index) return listOf(this)
+                return listOf(this, other)
             }
             if (other is AddUpdate) {
-                if (other.index > index) return Pair(this, other)
-                if (other.index == index) return Pair(AddUpdate(index, value), null)
-                return Pair(SetUpdate(index - 1, value), other)
+                if (other.index > index) return listOf(this, other)
+                if (other.index == index) return listOf(AddUpdate(index, value))
+                return listOf(SetUpdate(index - 1, value), other)
             }
             if (other is RemoveUpdate) {
-                if (other.index > index) return Pair(this, other)
-                return Pair(SetUpdate(index + 1, value), other)
+                if (other.index <= index) throw IllegalStateException("Unreachable")
+                return listOf(this, other)
             }
             throw IllegalStateException("Invalid update type!")
         }
@@ -172,7 +174,7 @@ fun main() {
 //    println("Original: ${originalList.backingList.joinToString(", ")}")
 
     val startTime = System.nanoTime()
-    for (i in 0..10000000) {
+    for (i in 0..1000000) {
         val rand = random.nextDouble()
         val update = if (list.size == 0 || rand < 0.33) {
             // Add
@@ -193,17 +195,17 @@ fun main() {
             tracker.update(ArrayUpdateTracker.RemoveUpdate(index))
         }
 
-//        println(update)
-//
-//        val copy = copy(originalList)
-//        tracker.apply(copy)
-//        println("List: ${list.backingList.joinToString(", ")}")
-//        println("Copy: ${copy.backingList.joinToString(", ")}")
-//        println(tracker)
-//        if (!compare(list, copy)) {
-//            println("LISTS DIFFER!!!!!")
-//        }
-//        println()
+        println(update)
+
+        val copy = copy(originalList)
+        tracker.apply(copy)
+        println("List: ${list.backingList.joinToString(", ")}")
+        println("Copy: ${copy.backingList.joinToString(", ")}")
+        println(tracker)
+        if (!compare(list, copy)) {
+            println("LISTS DIFFER!!!!!")
+        }
+        println()
     }
     val endTime = System.nanoTime()
 
@@ -214,7 +216,7 @@ fun main() {
 
     println(list.size)
 
-    println(tracker)
+//    println(tracker)
 
     for (i in 0 until list.size) {
         if (list.getNumber(i) != originalList.getNumber(i)) {
