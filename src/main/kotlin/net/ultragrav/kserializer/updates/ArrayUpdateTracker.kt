@@ -1,29 +1,74 @@
-package net.ultragrav.kserializer.json
+package net.ultragrav.kserializer.updates
 
-import java.util.*
-import java.util.concurrent.ThreadLocalRandom
+import net.ultragrav.kserializer.json.JsonArray
+import net.ultragrav.kserializer.serialization.TinySerializer
+import net.ultragrav.serializer.GravSerializable
+import net.ultragrav.serializer.GravSerializer
 
-class ArrayUpdateTracker {
-    internal val updates = mutableListOf<Update>()
+class ArrayUpdateTracker() : UpdateTracker<JsonArray>, GravSerializable {
+    private val updates = mutableListOf<ArrayUpdate>()
 
-    internal fun update(update: Update): Update {
+    constructor(serializer: GravSerializer) : this() {
+        val size = serializer.readInt()
+        for (i in 0 until size) {
+            when (serializer.readByte().toInt()) {
+                0 -> addUpdate(serializer.readInt(), TinySerializer.read(serializer))
+                1 -> setUpdate(serializer.readInt(), TinySerializer.read(serializer))
+                2 -> removeUpdate(serializer.readInt(), serializer.readInt())
+            }
+        }
+    }
+
+    internal fun update(update: ArrayUpdate) {
         updates.add(update)
         var index = updates.size - 1
         while (index > 0 && updates[index].shouldCommute(updates[index - 1])) {
             val commuted = updates[index].commute(updates[index - 1])
             updates.subList(index - 1, index + 1).let {
                 it.clear()
-                if (commuted.isEmpty()) return@update update
+                if (commuted.isEmpty()) return@update
                 it.addAll(commuted)
             }
             index--
         }
-        return update
     }
 
-    fun apply(array: JsonArray) {
+    internal fun setUpdate(index: Int, value: Any?) = update(SetUpdate(index, value))
+    internal fun addUpdate(index: Int, value: Any?) = update(AddUpdate(index, value))
+    internal fun removeUpdate(index: Int, count: Int = 1) = update(RemoveUpdate(index, count))
+
+    fun clear() {
+        updates.clear()
+    }
+
+    override fun serialize(serializer: GravSerializer) {
+        serializer.writeInt(updates.size)
         for (update in updates) {
-            update.apply(array)
+            when (update) {
+                is AddUpdate -> {
+                    serializer.writeByte(0)
+                    serializer.writeInt(update.index)
+                    TinySerializer.write(serializer, update.value)
+                }
+
+                is SetUpdate -> {
+                    serializer.writeByte(1)
+                    serializer.writeInt(update.index)
+                    TinySerializer.write(serializer, update.value)
+                }
+
+                is RemoveUpdate -> {
+                    serializer.writeByte(2)
+                    serializer.writeInt(update.index)
+                    serializer.writeInt(update.count)
+                }
+            }
+        }
+    }
+
+    override fun apply(indexable: JsonArray) {
+        for (update in updates) {
+            update.apply(indexable)
         }
     }
 
@@ -31,21 +76,20 @@ class ArrayUpdateTracker {
         return "ArrayUpdateTracker(updates=\n${updates.joinToString("\n")}\n)"
     }
 
-    internal abstract class Update(val index: Int) {
-        open fun shouldCommute(other: Update): Boolean {
+    internal abstract class ArrayUpdate(val index: Int) : UpdateTracker.Update<JsonArray> {
+        open fun shouldCommute(other: ArrayUpdate): Boolean {
             return other.index >= index
         }
 
-        abstract fun apply(array: JsonArray)
-        abstract fun commute(other: Update): List<Update>
+        abstract fun commute(other: ArrayUpdate): List<ArrayUpdate>
     }
 
-    internal class AddUpdate(index: Int, val value: Any?) : Update(index) {
-        override fun apply(array: JsonArray) {
-            array.internalAdd(value, index)
+    internal class AddUpdate(index: Int, val value: Any?) : ArrayUpdate(index) {
+        override fun apply(indexable: JsonArray) {
+            indexable.internalAdd(value, index)
         }
 
-        override fun commute(other: Update): List<Update> {
+        override fun commute(other: ArrayUpdate): List<ArrayUpdate> {
             if (other is SetUpdate) {
                 if (other.index < index) return listOf(this, other)
                 return listOf(this, SetUpdate(other.index + 1, other.value))
@@ -66,16 +110,16 @@ class ArrayUpdateTracker {
         }
     }
 
-    internal class RemoveUpdate(index: Int, val count: Int = 1) : Update(index) {
-        override fun apply(array: JsonArray) {
+    internal class RemoveUpdate(index: Int, val count: Int = 1) : ArrayUpdate(index) {
+        override fun apply(indexable: JsonArray) {
             if (count == 1) {
-                array.remove(index)
+                indexable.remove(index)
             } else {
-                array.backingList.subList(index, index + count).clear()
+                indexable.backingList.subList(index, index + count).clear()
             }
         }
 
-        override fun commute(other: Update): List<Update> {
+        override fun commute(other: ArrayUpdate): List<ArrayUpdate> {
             if (other is SetUpdate) {
                 if (other.index < index) return listOf(this, other)
                 if (other.index < index + count) return listOf(this)
@@ -109,17 +153,17 @@ class ArrayUpdateTracker {
         }
     }
 
-    internal class SetUpdate(index: Int, val value: Any?) : Update(index) {
-        override fun apply(array: JsonArray) {
-            array.internalSet(index, value)
+    internal class SetUpdate(index: Int, val value: Any?) : ArrayUpdate(index) {
+        override fun apply(indexable: JsonArray) {
+            indexable.internalSet(index, value)
         }
 
-        override fun shouldCommute(other: Update): Boolean {
+        override fun shouldCommute(other: ArrayUpdate): Boolean {
             if (other is RemoveUpdate) return index < other.index
             return super.shouldCommute(other)
         }
 
-        override fun commute(other: Update): List<Update> {
+        override fun commute(other: ArrayUpdate): List<ArrayUpdate> {
             if (other is SetUpdate) {
                 if (other.index == index) return listOf(this)
                 return listOf(this, other)
@@ -138,90 +182,6 @@ class ArrayUpdateTracker {
 
         override fun toString(): String {
             return "SetUpdate(index=$index, value=$value)"
-        }
-    }
-}
-
-fun copy(arr: JsonArray): JsonArray {
-    val copy = JsonArray()
-    copy.backingList.addAll(arr.backingList)
-    return copy
-}
-
-fun compare(arr1: JsonArray, arr2: JsonArray): Boolean {
-    if (arr1.size != arr2.size) return false
-    for (i in 0 until arr1.size) {
-        if (arr1.backingList[i] != arr2.backingList[i]) return false
-    }
-    return true
-}
-
-fun main() {
-    val tracker = ArrayUpdateTracker()
-
-    val seed = ThreadLocalRandom.current().nextLong()
-    val random = Random(seed)
-
-
-    val list = JsonArray()
-    val originalList = JsonArray()
-    for (i in 0..200) {
-        val value = random.nextInt(100)
-        list.addNumber(value)
-        originalList.addNumber(value)
-    }
-
-//    println("Original: ${originalList.backingList.joinToString(", ")}")
-
-    val startTime = System.nanoTime()
-    for (i in 0..1000000) {
-        val rand = random.nextDouble()
-        val update = if (list.size == 0 || rand < 0.33) {
-            // Add
-            val value = random.nextInt(100)
-            val index = random.nextInt(list.size + 1)
-            list.addNumber(value, index)
-            tracker.update(ArrayUpdateTracker.AddUpdate(index, value))
-        } else if (rand < 0.66) {
-            // Set
-            val value = random.nextInt(100)
-            val index = random.nextInt(list.size)
-            list.setNumber(index, value)
-            tracker.update(ArrayUpdateTracker.SetUpdate(index, value))
-        } else {
-            // Remove
-            val index = random.nextInt(list.size)
-            list.remove(index)
-            tracker.update(ArrayUpdateTracker.RemoveUpdate(index))
-        }
-
-        println(update)
-
-        val copy = copy(originalList)
-        tracker.apply(copy)
-        println("List: ${list.backingList.joinToString(", ")}")
-        println("Copy: ${copy.backingList.joinToString(", ")}")
-        println(tracker)
-        if (!compare(list, copy)) {
-            println("LISTS DIFFER!!!!!")
-        }
-        println()
-    }
-    val endTime = System.nanoTime()
-
-    // Compare the two lists
-    println(tracker.updates.size)
-    println("Time: ${(endTime - startTime) / 1000000.0}ms")
-    tracker.apply(originalList)
-
-    println(list.size)
-
-//    println(tracker)
-
-    for (i in 0 until list.size) {
-        if (list.getNumber(i) != originalList.getNumber(i)) {
-            println("Lists differ at index $i: ${list.getNumber(i)} != ${originalList.getNumber(i)}")
-            break
         }
     }
 }

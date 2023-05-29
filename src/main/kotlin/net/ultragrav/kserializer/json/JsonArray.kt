@@ -1,9 +1,25 @@
 package net.ultragrav.kserializer.json
 
+import net.ultragrav.kserializer.updates.ArrayUpdateTracker
 import java.util.concurrent.locks.ReentrantReadWriteLock
 
 open class JsonArray(initialSize: Int = 8) : JsonIndexable<Int> {
+    var trackingUpdates = false
+        set(value) {
+            if (value) {
+                if (internalUpdateTracker == null) {
+                    internalUpdateTracker = ArrayUpdateTracker()
+                }
+            } else {
+                internalUpdateTracker = null
+            }
+            field = value
+        }
+
     internal val backingList: MutableList<Any?> = ArrayList(initialSize)
+
+    private var internalUpdateTracker: ArrayUpdateTracker? = null
+    val updateTracker get() = internalUpdateTracker ?: throw IllegalStateException("Update tracking is not enabled")
 
     private val lock: ReentrantReadWriteLock = ReentrantReadWriteLock()
     private inline fun <T> readLocked(block: () -> T): T {
@@ -54,21 +70,42 @@ open class JsonArray(initialSize: Int = 8) : JsonIndexable<Int> {
     override fun setByteArray(key: Int, byteArray: ByteArray): Any? = internalSet(key, byteArray)
     fun addByteArray(byteArray: ByteArray, index: Int = -1) = internalAdd(byteArray, index)
 
-    override fun remove(key: Int) = writeLocked { backingList.removeAt(key) }
+    override fun remove(key: Int) = writeLocked {
+        backingList.removeAt(key)
+        if (trackingUpdates) {
+            updateTracker.removeUpdate(key)
+        }
+    }
 
-    override fun clear() = writeLocked { backingList.clear() }
+    override fun clear() = writeLocked {
+        if (trackingUpdates) {
+            updateTracker.clear()
+            updateTracker.update(ArrayUpdateTracker.RemoveUpdate(0, size))
+        }
+        backingList.clear()
+    }
 
 
     internal fun internalSet(key: Int, value: Any?) = writeLocked {
         growToAccommodate(key)
-        backingList.set(key, value)
+        if (trackingUpdates) {
+            updateTracker.setUpdate(key, value)
+        }
+        backingList[key] = value
     }
 
     internal fun internalAdd(value: Any?, index: Int = -1) = writeLocked {
-        if (index == -1)
+        if (index == -1) {
+            if (trackingUpdates) {
+                updateTracker.addUpdate(backingList.size, value)
+            }
             backingList.add(value)
-        else
+        } else {
+            if (trackingUpdates) {
+                updateTracker.addUpdate(index, value)
+            }
             backingList.add(index, value)
+        }
     }
 
     private fun growToAccommodate(index: Int) {

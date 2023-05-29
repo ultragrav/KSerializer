@@ -5,7 +5,7 @@ import net.ultragrav.kserializer.json.JsonObject
 import net.ultragrav.serializer.GravSerializer
 
 object TinySerializer {
-    fun write(data: Any?, serializer: GravSerializer) {
+    fun write(serializer: GravSerializer, data: Any?) {
         when (data) {
             null -> serializer.writeByte(0)
 
@@ -14,7 +14,7 @@ object TinySerializer {
                 serializer.writeInt(data.backingMap.size)
                 for ((key, value) in data.backingMap) {
                     serializer.writeString(key)
-                    write(value, serializer)
+                    write(serializer, value)
                 }
             }
 
@@ -22,7 +22,7 @@ object TinySerializer {
                 serializer.writeByte(2)
                 serializer.writeInt(data.backingList.size)
                 for (value in data.backingList) {
-                    write(value, serializer)
+                    write(serializer, value)
                 }
             }
 
