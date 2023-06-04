@@ -4,6 +4,8 @@ import net.ultragrav.kserializer.json.JsonArray
 import net.ultragrav.kserializer.json.JsonIndexable
 import net.ultragrav.kserializer.json.JsonObject
 import net.ultragrav.kserializer.serialization.JsonDataSerializer
+import net.ultragrav.serializer.GravSerializable
+import net.ultragrav.serializer.GravSerializer
 
 object Serializers {
     val STRING = object : JsonDataSerializer<String> {
@@ -144,6 +146,26 @@ object Serializers {
 
             override fun serializeAdd(data: JsonArray, value: T, index: Int) {
                 data.addString(value.name, index)
+            }
+        }
+    }
+
+    fun <T : GravSerializable> serializable(clazz: Class<T>): JsonDataSerializer<T> {
+        return object : JsonDataSerializer<T> {
+            override fun <K> serialize(data: JsonIndexable<K>, key: K, value: T): Any? {
+                val ser = GravSerializer()
+                value.serialize(ser)
+                return data.setByteArray(key, ser.toByteArray())
+            }
+
+            override fun <K> deserialize(data: JsonIndexable<K>, key: K): T {
+                return GravSerializable.deserialize(clazz, GravSerializer(data.getByteArray((key))))
+            }
+
+            override fun serializeAdd(data: JsonArray, value: T, index: Int) {
+                val ser = GravSerializer()
+                value.serialize(ser)
+                data.addByteArray(ser.toByteArray(), index)
             }
         }
     }

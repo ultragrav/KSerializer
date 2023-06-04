@@ -4,15 +4,15 @@ plugins {
 }
 
 group = "net.ultragrav"
-version = "1.0.0"
+version = "1.0.1"
 
 repositories {
     mavenCentral()
-    maven("https://mvn.ultragrav.net/")
+    maven("https://mvn.ultragrav.net/repository/maven-public/")
 }
 
 dependencies {
-    api("net.ultragrav", "Serializer", "1.2.15")
+    api("net.ultragrav", "Serializer", "1.2.18")
 
     testImplementation(kotlin("test"))
 }
