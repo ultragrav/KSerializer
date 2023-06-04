@@ -60,6 +60,16 @@ open class JsonObject(initialCapacity: Int = 8) : JsonIndexable<String> {
 
     override fun clear() = writeLocked { backingMap.clear() }
 
+    fun asMap(): Map<String, Any?> = backingMap.mapValues {
+        if (it is JsonArray) {
+            it.asList()
+        } else if (it is JsonObject) {
+            it.asMap()
+        } else {
+            it
+        }
+    }
+
     override fun toString(): String {
         // Convert to JSON string
         val builder = StringBuilder()

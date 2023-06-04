@@ -7,19 +7,18 @@ open class JsonArray(initialSize: Int = 8) : JsonIndexable<Int> {
     var trackingUpdates = false
         set(value) {
             if (value) {
-                if (internalUpdateTracker == null) {
-                    internalUpdateTracker = ArrayUpdateTracker()
+                if (updateTracker == null) {
+                    updateTracker = ArrayUpdateTracker()
                 }
             } else {
-                internalUpdateTracker = null
+                updateTracker = null
             }
             field = value
         }
 
     internal val backingList: MutableList<Any?> = ArrayList(initialSize)
 
-    private var internalUpdateTracker: ArrayUpdateTracker? = null
-    val updateTracker get() = internalUpdateTracker ?: throw IllegalStateException("Update tracking is not enabled")
+    internal var updateTracker: ArrayUpdateTracker? = null
 
     private val lock: ReentrantReadWriteLock = ReentrantReadWriteLock()
     private inline fun <T> readLocked(block: () -> T): T {
@@ -73,14 +72,14 @@ open class JsonArray(initialSize: Int = 8) : JsonIndexable<Int> {
     override fun remove(key: Int) = writeLocked {
         backingList.removeAt(key)
         if (trackingUpdates) {
-            updateTracker.removeUpdate(key)
+            updateTracker!!.removeUpdate(key)
         }
     }
 
     override fun clear() = writeLocked {
         if (trackingUpdates) {
-            updateTracker.clear()
-            updateTracker.update(ArrayUpdateTracker.RemoveUpdate(0, size))
+            updateTracker!!.clear()
+            updateTracker!!.update(ArrayUpdateTracker.RemoveUpdate(0, size))
         }
         backingList.clear()
     }
@@ -89,7 +88,7 @@ open class JsonArray(initialSize: Int = 8) : JsonIndexable<Int> {
     internal fun internalSet(key: Int, value: Any?) = writeLocked {
         growToAccommodate(key)
         if (trackingUpdates) {
-            updateTracker.setUpdate(key, value)
+            updateTracker!!.setUpdate(key, value)
         }
         backingList[key] = value
     }
@@ -97,12 +96,12 @@ open class JsonArray(initialSize: Int = 8) : JsonIndexable<Int> {
     internal fun internalAdd(value: Any?, index: Int = -1) = writeLocked {
         if (index == -1) {
             if (trackingUpdates) {
-                updateTracker.addUpdate(backingList.size, value)
+                updateTracker!!.addUpdate(backingList.size, value)
             }
             backingList.add(value)
         } else {
             if (trackingUpdates) {
-                updateTracker.addUpdate(index, value)
+                updateTracker!!.addUpdate(index, value)
             }
             backingList.add(index, value)
         }
@@ -111,6 +110,16 @@ open class JsonArray(initialSize: Int = 8) : JsonIndexable<Int> {
     private fun growToAccommodate(index: Int) {
         while (backingList.size <= index) {
             backingList.add(null)
+        }
+    }
+
+    fun asList(): List<Any?> = backingList.map {
+        if (it is JsonObject) {
+            it.asMap()
+        } else if (it is JsonArray) {
+            it.asList()
+        } else {
+            it
         }
     }
 

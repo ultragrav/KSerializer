@@ -5,8 +5,8 @@ import net.ultragrav.kserializer.serialization.TinySerializer
 import net.ultragrav.serializer.GravSerializable
 import net.ultragrav.serializer.GravSerializer
 
-class ArrayUpdateTracker() : UpdateTracker<JsonArray>, GravSerializable {
-    private val updates = mutableListOf<ArrayUpdate>()
+internal class ArrayUpdateTracker() : UpdateTracker<JsonArray>, GravSerializable {
+    internal val updates = mutableListOf<ArrayUpdate>()
 
     constructor(serializer: GravSerializer) : this() {
         val size = serializer.readInt()
