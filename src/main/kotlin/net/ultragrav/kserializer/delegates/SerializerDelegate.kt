@@ -13,8 +13,5 @@ class SerializerDelegate<T : Any>(val serializer: JsonDataSerializer<T>, val key
         serializer.serialize(wrapper.data, key ?: property.name, value)
     }
 
-    fun cache(): CachedDelegate<T> = CachedDelegate(
-        { wrapper, property -> getValue(wrapper, property) },
-        { wrapper, property, value -> setValue(wrapper, property, value) }
-    )
+    fun cache() = CachedSerializerDelegate(serializer, key)
 }
