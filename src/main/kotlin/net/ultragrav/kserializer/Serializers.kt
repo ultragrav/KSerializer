@@ -6,6 +6,8 @@ import net.ultragrav.kserializer.json.JsonObject
 import net.ultragrav.kserializer.serialization.JsonDataSerializer
 import net.ultragrav.serializer.GravSerializable
 import net.ultragrav.serializer.GravSerializer
+import java.math.BigDecimal
+import java.math.BigInteger
 
 object Serializers {
     val STRING = object : JsonDataSerializer<String> {
@@ -131,6 +133,44 @@ object Serializers {
 
         override fun serializeAdd(data: JsonArray, value: ByteArray, index: Int) {
             data.addByteArray(value, index)
+        }
+    }
+
+    val BIG_INTEGER = object : JsonDataSerializer<BigInteger> {
+        override fun <K> serialize(data: JsonIndexable<K>, key: K, value: BigInteger): Any? {
+            return data.setByteArray(key, value.toByteArray())
+        }
+
+        override fun <K> deserialize(data: JsonIndexable<K>, key: K): BigInteger {
+            return BigInteger(data.getByteArray(key))
+        }
+
+        override fun serializeAdd(data: JsonArray, value: BigInteger, index: Int) {
+            data.addByteArray(value.toByteArray(), index)
+        }
+    }
+
+    val BIG_DECIMAL = object : JsonDataSerializer<BigDecimal> {
+        override fun <K> serialize(data: JsonIndexable<K>, key: K, value: BigDecimal): Any? {
+            val ser = GravSerializer()
+            ser.writeInt(value.scale())
+            ser.append(value.unscaledValue().toByteArray())
+            return data.setByteArray(key, ser.toByteArray())
+        }
+
+        override fun <K> deserialize(data: JsonIndexable<K>, key: K): BigDecimal {
+            val bytes = data.getByteArray(key)
+            val ser = GravSerializer(bytes)
+            val scale = ser.readInt()
+            val unscaled = ser.readBytes(ser.remaining)
+            return BigDecimal(BigInteger(unscaled), scale)
+        }
+
+        override fun serializeAdd(data: JsonArray, value: BigDecimal, index: Int) {
+            val ser = GravSerializer()
+            ser.writeInt(value.scale())
+            ser.append(value.unscaledValue().toByteArray())
+            data.addByteArray(ser.toByteArray(), index)
         }
     }
 

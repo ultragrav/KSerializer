@@ -7,6 +7,8 @@ import net.ultragrav.kserializer.delegates.WrapperListDelegate
 import net.ultragrav.kserializer.json.JsonArray
 import net.ultragrav.kserializer.json.JsonObject
 import net.ultragrav.kserializer.serialization.JsonDataSerializer
+import java.math.BigDecimal
+import java.math.BigInteger
 
 abstract class Wrapper(val data: JsonObject) {
     protected fun <T : Any> serializer(ser: JsonDataSerializer<T>, key: String? = null): SerializerDelegate<T> {
@@ -63,5 +65,13 @@ abstract class Wrapper(val data: JsonObject) {
 
     protected fun byteArray(key: String? = null): SerializerDelegate<ByteArray> {
         return serializer(Serializers.BYTE_ARRAY, key)
+    }
+
+    protected fun bigInteger(key: String? = null): SerializerDelegate<BigInteger> {
+        return serializer(Serializers.BIG_INTEGER, key)
+    }
+
+    protected fun bigDecimal(key: String? = null): SerializerDelegate<BigDecimal> {
+        return serializer(Serializers.BIG_DECIMAL, key)
     }
 }
