@@ -31,7 +31,10 @@ abstract class Wrapper(val data: JsonObject) {
         return WrapperListDelegate(wrapperFactory, key)
     }
 
-    protected inline fun <reified T : Enum<T>> enum(key: String? = null, initial: T): SerializerDelegate<T> {
+    protected inline fun <reified T : Enum<T>> enum(
+        initial: T,
+        key: String? = null
+    ): SerializerDelegate<T> {
         return serializer(Serializers.enum(T::class.java), initial, key)
     }
 
