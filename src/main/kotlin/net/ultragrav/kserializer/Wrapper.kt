@@ -5,12 +5,13 @@ import net.ultragrav.kserializer.delegates.SerializerDelegate
 import net.ultragrav.kserializer.delegates.WrapperDelegate
 import net.ultragrav.kserializer.delegates.WrapperListDelegate
 import net.ultragrav.kserializer.json.JsonArray
+import net.ultragrav.kserializer.json.JsonIndexable
 import net.ultragrav.kserializer.json.JsonObject
 import net.ultragrav.kserializer.serialization.JsonDataSerializer
 import java.math.BigDecimal
 import java.math.BigInteger
 
-abstract class Wrapper(val data: JsonObject) {
+abstract class Wrapper(val data: JsonIndexable<String>) {
     protected fun <T : Any> serializer(
         ser: JsonDataSerializer<T>,
         initial: T,
