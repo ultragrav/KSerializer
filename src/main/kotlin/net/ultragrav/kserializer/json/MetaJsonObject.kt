@@ -2,13 +2,24 @@ package net.ultragrav.kserializer.json
 
 import net.ultragrav.serializer.JsonMeta
 
+/**
+ * This class is provided as a wrapper for JsonMeta.
+ * It implements IJsonObject and allows for a smoother
+ * transition from a JsonMeta system to a JsonObject system.
+ */
 class MetaJsonObject(val meta: JsonMeta) : IJsonObject {
+    override fun createObject(): IJsonObject {
+        return MetaJsonObject(JsonMeta())
+    }
+
     override fun getString(key: String): String {
-        TODO("Not yet implemented")
+        return meta[key]
     }
 
     override fun setString(key: String, value: String): Any? {
-        TODO("Not yet implemented")
+        val prev = meta.get<Any?>(key)
+        meta.set(key, value)
+        return prev
     }
 
     override fun getObject(key: String): IJsonObject {
