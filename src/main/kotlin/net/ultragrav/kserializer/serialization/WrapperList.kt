@@ -1,10 +1,11 @@
 package net.ultragrav.kserializer.serialization
 
 import net.ultragrav.kserializer.Wrapper
+import net.ultragrav.kserializer.json.IJsonObject
 import net.ultragrav.kserializer.json.JsonArray
 import net.ultragrav.kserializer.json.JsonObject
 
-class WrapperList<T : Wrapper>(private val array: JsonArray, wrapperFactory: (JsonObject) -> T) : MutableList<T> {
+class WrapperList<T : Wrapper>(private val array: JsonArray, wrapperFactory: (IJsonObject) -> T) : MutableList<T> {
     override val size get() = array.size
 
     private val wrapperList = mutableListOf<T>()

@@ -1,12 +1,13 @@
 package net.ultragrav.kserializer.delegates
 
 import net.ultragrav.kserializer.Wrapper
+import net.ultragrav.kserializer.json.IJsonObject
 import net.ultragrav.kserializer.json.JsonArray
 import net.ultragrav.kserializer.json.JsonObject
 import net.ultragrav.kserializer.serialization.WrapperList
 import kotlin.reflect.KProperty
 
-class WrapperListDelegate<T : Wrapper>(val wrapperFactory: (JsonObject) -> T, val key: String? = null) {
+class WrapperListDelegate<T : Wrapper>(val wrapperFactory: (IJsonObject) -> T, val key: String? = null) {
     private lateinit var cachedList: WrapperList<T>
 
     operator fun getValue(wrapper: Wrapper, property: KProperty<*>): MutableList<T> {

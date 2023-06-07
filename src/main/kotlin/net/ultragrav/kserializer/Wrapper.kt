@@ -29,7 +29,7 @@ abstract class Wrapper(val data: IJsonObject) {
         return ListDelegate(ser, key)
     }
 
-    protected fun <T : Wrapper> list(wrapperFactory: (JsonObject) -> T, key: String? = null): WrapperListDelegate<T> {
+    protected fun <T : Wrapper> list(wrapperFactory: (IJsonObject) -> T, key: String? = null): WrapperListDelegate<T> {
         return WrapperListDelegate(wrapperFactory, key)
     }
 
