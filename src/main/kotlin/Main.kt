@@ -3,8 +3,8 @@ import net.ultragrav.kserializer.Wrapper
 import net.ultragrav.kserializer.json.JsonObject
 
 class TestWrapper(data: JsonObject) : Wrapper(data) {
-    var test by string()
-    var enum by enum<TestEnum>()
+    var test by string(initial = "Hello")
+    var enum by enum<TestEnum>(initial = TestEnum.TEST1)
     val wrapper by wrapper(::OtherWrapper)
     val wrapperList by list(::OtherWrapper)
 }

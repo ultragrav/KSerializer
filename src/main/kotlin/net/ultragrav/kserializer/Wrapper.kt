@@ -11,7 +11,11 @@ import java.math.BigDecimal
 import java.math.BigInteger
 
 abstract class Wrapper(val data: JsonObject) {
-    protected fun <T : Any> serializer(ser: JsonDataSerializer<T>, key: String? = null, initial: T): SerializerDelegate<T> {
+    protected fun <T : Any> serializer(
+        ser: JsonDataSerializer<T>,
+        initial: T,
+        key: String? = null
+    ): SerializerDelegate<T> {
         return SerializerDelegate(ser, key, initial)
     }
 
@@ -28,53 +32,83 @@ abstract class Wrapper(val data: JsonObject) {
     }
 
     protected inline fun <reified T : Enum<T>> enum(key: String? = null, initial: T): SerializerDelegate<T> {
-        return serializer(Serializers.enum(T::class.java), key, initial)
+        return serializer(Serializers.enum(T::class.java), initial, key)
     }
 
     protected fun jsonObject(
-        key: String? = null,
-        initial: JsonObject = JsonObject()
+        initial: JsonObject = JsonObject(),
+        key: String? = null
     ): SerializerDelegate<JsonObject> {
-        return serializer(Serializers.JSON_OBJECT, key, initial = initial)
+        return serializer(Serializers.JSON_OBJECT, initial, key)
     }
 
-    protected fun jsonArray(key: String? = null, initial: JsonArray = JsonArray()): SerializerDelegate<JsonArray> {
-        return serializer(Serializers.JSON_ARRAY, key, initial = initial)
+    protected fun jsonArray(
+        initial: JsonArray = JsonArray(),
+        key: String? = null
+    ): SerializerDelegate<JsonArray> {
+        return serializer(Serializers.JSON_ARRAY, initial, key)
     }
 
-    protected fun string(key: String? = null, initial: String): SerializerDelegate<String> {
-        return serializer(Serializers.STRING, key, initial)
+    protected fun string(
+        initial: String,
+        key: String? = null
+    ): SerializerDelegate<String> {
+        return serializer(Serializers.STRING, initial, key)
     }
 
-    protected fun int(key: String? = null, initial: Int): SerializerDelegate<Int> {
-        return serializer(Serializers.INT, key, initial)
+    protected fun int(
+        initial: Int,
+        key: String? = null
+    ): SerializerDelegate<Int> {
+        return serializer(Serializers.INT, initial, key)
     }
 
-    protected fun long(key: String? = null, initial: Long): SerializerDelegate<Long> {
-        return serializer(Serializers.LONG, key, initial)
+    protected fun long(
+        initial: Long,
+        key: String? = null
+    ): SerializerDelegate<Long> {
+        return serializer(Serializers.LONG, initial, key)
     }
 
-    protected fun double(key: String? = null, initial: Double): SerializerDelegate<Double> {
-        return serializer(Serializers.DOUBLE, key, initial)
+    protected fun double(
+        initial: Double,
+        key: String? = null
+    ): SerializerDelegate<Double> {
+        return serializer(Serializers.DOUBLE, initial, key)
     }
 
-    protected fun float(key: String? = null, initial: Float): SerializerDelegate<Float> {
-        return serializer(Serializers.FLOAT, key, initial)
+    protected fun float(
+        initial: Float,
+        key: String? = null
+    ): SerializerDelegate<Float> {
+        return serializer(Serializers.FLOAT, initial, key)
     }
 
-    protected fun boolean(key: String? = null, initial: Boolean): SerializerDelegate<Boolean> {
-        return serializer(Serializers.BOOLEAN, key, initial)
+    protected fun boolean(
+        initial: Boolean,
+        key: String? = null
+    ): SerializerDelegate<Boolean> {
+        return serializer(Serializers.BOOLEAN, initial, key)
     }
 
-    protected fun byteArray(key: String? = null, initial: ByteArray): SerializerDelegate<ByteArray> {
-        return serializer(Serializers.BYTE_ARRAY, key, initial)
+    protected fun byteArray(
+        initial: ByteArray,
+        key: String? = null
+    ): SerializerDelegate<ByteArray> {
+        return serializer(Serializers.BYTE_ARRAY, initial, key)
     }
 
-    protected fun bigInteger(key: String? = null, initial: BigInteger): SerializerDelegate<BigInteger> {
-        return serializer(Serializers.BIG_INTEGER, key, initial)
+    protected fun bigInteger(
+        initial: BigInteger,
+        key: String? = null
+    ): SerializerDelegate<BigInteger> {
+        return serializer(Serializers.BIG_INTEGER, initial, key)
     }
 
-    protected fun bigDecimal(key: String? = null, initial: BigDecimal): SerializerDelegate<BigDecimal> {
-        return serializer(Serializers.BIG_DECIMAL, key, initial)
+    protected fun bigDecimal(
+        initial: BigDecimal,
+        key: String? = null
+    ): SerializerDelegate<BigDecimal> {
+        return serializer(Serializers.BIG_DECIMAL, initial, key)
     }
 }
