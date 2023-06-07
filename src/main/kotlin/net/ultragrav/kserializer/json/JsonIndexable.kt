@@ -21,4 +21,6 @@ interface JsonIndexable<T> {
 
     fun remove(key: T): Any?
     fun clear()
+
+    val size: Int
 }

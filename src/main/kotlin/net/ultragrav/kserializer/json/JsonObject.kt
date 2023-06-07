@@ -5,7 +5,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock
 open class JsonObject(initialCapacity: Int = 8) : JsonIndexable<String> {
     internal val backingMap = LinkedHashMap<String, Any>(initialCapacity)
 
-    val size get() = readLocked { backingMap.size }
+    override val size get() = readLocked { backingMap.size }
 
     private val lock: ReentrantReadWriteLock = ReentrantReadWriteLock()
     private inline fun <T> readLocked(block: () -> T): T {

@@ -39,7 +39,7 @@ open class JsonArray(initialSize: Int = 8) : JsonIndexable<Int> {
         }
     }
 
-    val size get() = backingList.size
+    override val size get() = backingList.size
 
     constructor(list: List<Any?>) : this() {
         backingList.addAll(list)
