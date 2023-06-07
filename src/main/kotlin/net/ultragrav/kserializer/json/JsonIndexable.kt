@@ -4,8 +4,8 @@ interface JsonIndexable<T> {
     fun getString(key: T): String
     fun setString(key: T, value: String): Any?
 
-    fun getObject(key: T): JsonObject
-    fun setObject(key: T, data: JsonObject): Any?
+    fun getObject(key: T): IJsonObject
+    fun setObject(key: T, data: IJsonObject): Any?
 
     fun getArray(key: T): JsonArray
     fun setArray(key: T, array: JsonArray): Any?
@@ -21,6 +21,8 @@ interface JsonIndexable<T> {
 
     fun remove(key: T): Any?
     fun clear()
+
+    fun contains(key: T): Boolean
 
     val size: Int
 }

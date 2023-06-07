@@ -16,7 +16,7 @@ open class JsonArray(initialSize: Int = 8) : JsonIndexable<Int> {
             field = value
         }
 
-    internal val backingList: MutableList<Any?> = ArrayList(initialSize)
+    internal var backingList: MutableList<Any?> = ArrayList(initialSize)
 
     internal var updateTracker: ArrayUpdateTracker? = null
 
@@ -49,9 +49,9 @@ open class JsonArray(initialSize: Int = 8) : JsonIndexable<Int> {
     override fun setString(key: Int, value: String): Any? = internalSet(key, value)
     fun addString(value: String, index: Int = -1) = internalAdd(value, index)
 
-    override fun getObject(key: Int): JsonObject = readLocked { return backingList[key] as JsonObject }
-    override fun setObject(key: Int, data: JsonObject): Any? = internalSet(key, data)
-    fun addObject(data: JsonObject, index: Int = -1) = internalAdd(data, index)
+    override fun getObject(key: Int): IJsonObject = readLocked { return backingList[key] as JsonObject }
+    override fun setObject(key: Int, data: IJsonObject): Any? = internalSet(key, data)
+    fun addObject(data: IJsonObject, index: Int = -1) = internalAdd(data, index)
 
     override fun getArray(key: Int): JsonArray = readLocked { return backingList[key] as JsonArray }
     override fun setArray(key: Int, array: JsonArray): Any? = internalSet(key, array)
@@ -82,6 +82,10 @@ open class JsonArray(initialSize: Int = 8) : JsonIndexable<Int> {
             updateTracker!!.update(ArrayUpdateTracker.RemoveUpdate(0, size))
         }
         backingList.clear()
+    }
+
+    override fun contains(key: Int): Boolean {
+        return key in 0 until size
     }
 
 

@@ -1,15 +1,16 @@
 import net.ultragrav.kserializer.Serializers
 import net.ultragrav.kserializer.Wrapper
+import net.ultragrav.kserializer.json.IJsonObject
 import net.ultragrav.kserializer.json.JsonObject
 
-class TestWrapper(data: JsonObject) : Wrapper(data) {
+class TestWrapper(data: IJsonObject) : Wrapper(data) {
     var test by string("Test")
     var enum by enum<TestEnum>(TestEnum.TEST1)
     val wrapper by wrapper(::OtherWrapper)
     val wrapperList by list(::OtherWrapper)
 }
 
-class OtherWrapper(data: JsonObject) : Wrapper(data) {
+class OtherWrapper(data: IJsonObject) : Wrapper(data) {
     var other by string("Other").cache()
     val list by list(Serializers.STRING)
 }

@@ -2,7 +2,7 @@ package net.ultragrav.kserializer.json
 
 import java.util.concurrent.locks.ReentrantReadWriteLock
 
-open class JsonObject(initialCapacity: Int = 8) : JsonIndexable<String> {
+open class JsonObject(initialCapacity: Int = 8) : IJsonObject {
     internal val backingMap = LinkedHashMap<String, Any>(initialCapacity)
 
     override val size get() = readLocked { backingMap.size }
@@ -26,6 +26,8 @@ open class JsonObject(initialCapacity: Int = 8) : JsonIndexable<String> {
         }
     }
 
+    override fun createObject(): IJsonObject = JsonObject()
+
     protected open fun <T : Any> internalSet(key: String, obj: T): Any? =
         writeLocked { return backingMap.put(key, obj) }
 
@@ -37,8 +39,8 @@ open class JsonObject(initialCapacity: Int = 8) : JsonIndexable<String> {
     override fun getString(key: String): String = internalGet(key)
     override fun setString(key: String, value: String): Any? = internalSet(key, value)
 
-    override fun getObject(key: String): JsonObject = internalGet(key)
-    override fun setObject(key: String, data: JsonObject): Any? = internalSet(key, data)
+    override fun getObject(key: String): IJsonObject = internalGet(key)
+    override fun setObject(key: String, data: IJsonObject): Any? = internalSet(key, data)
 
     override fun getArray(key: String): JsonArray = internalGet(key)
     override fun setArray(key: String, array: JsonArray): Any? = internalSet(key, array)
@@ -52,7 +54,7 @@ open class JsonObject(initialCapacity: Int = 8) : JsonIndexable<String> {
     override fun getByteArray(key: String): ByteArray = internalGet(key)
     override fun setByteArray(key: String, byteArray: ByteArray): Any? = internalSet(key, byteArray)
 
-    fun contains(key: String): Boolean {
+    override fun contains(key: String): Boolean {
         return backingMap.containsKey(key)
     }
 
