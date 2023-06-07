@@ -6,7 +6,7 @@ import net.ultragrav.kserializer.json.JsonArray
 import net.ultragrav.kserializer.serialization.SerializedList
 import kotlin.reflect.KProperty
 
-class ListDelegate<T>(val serializer: JsonDataSerializer<T>, val key: String? = null) {
+class ListDelegate<T>(private val serializer: JsonDataSerializer<T>, val key: String? = null) {
     private lateinit var cachedList: SerializedList<T>
 
     operator fun getValue(wrapper: Wrapper, property: KProperty<*>): MutableList<T> {
@@ -17,6 +17,7 @@ class ListDelegate<T>(val serializer: JsonDataSerializer<T>, val key: String? = 
         if (!::cachedList.isInitialized) {
             cachedList = SerializedList(wrapper.data.getArray(k), serializer)
         }
+
         return cachedList
     }
 
