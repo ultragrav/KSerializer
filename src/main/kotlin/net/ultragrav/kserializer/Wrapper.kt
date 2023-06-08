@@ -4,15 +4,13 @@ import net.ultragrav.kserializer.delegates.ListDelegate
 import net.ultragrav.kserializer.delegates.SerializerDelegate
 import net.ultragrav.kserializer.delegates.WrapperDelegate
 import net.ultragrav.kserializer.delegates.WrapperListDelegate
-import net.ultragrav.kserializer.json.IJsonObject
 import net.ultragrav.kserializer.json.JsonArray
-import net.ultragrav.kserializer.json.JsonIndexable
 import net.ultragrav.kserializer.json.JsonObject
 import net.ultragrav.kserializer.serialization.JsonDataSerializer
 import java.math.BigDecimal
 import java.math.BigInteger
 
-abstract class Wrapper(val data: IJsonObject) {
+abstract class Wrapper(val data: JsonObject) {
     protected fun <T : Any> serializer(
         ser: JsonDataSerializer<T>,
         initial: T,
@@ -21,7 +19,7 @@ abstract class Wrapper(val data: IJsonObject) {
         return SerializerDelegate(ser, key, initial)
     }
 
-    protected fun <T : Wrapper> wrapper(wrapperFactory: (IJsonObject) -> T, key: String? = null): WrapperDelegate<T> {
+    protected fun <T : Wrapper> wrapper(wrapperFactory: (JsonObject) -> T, key: String? = null): WrapperDelegate<T> {
         return WrapperDelegate(wrapperFactory, key)
     }
 
@@ -29,7 +27,7 @@ abstract class Wrapper(val data: IJsonObject) {
         return ListDelegate(ser, key)
     }
 
-    protected fun <T : Wrapper> list(wrapperFactory: (IJsonObject) -> T, key: String? = null): WrapperListDelegate<T> {
+    protected fun <T : Wrapper> list(wrapperFactory: (JsonObject) -> T, key: String? = null): WrapperListDelegate<T> {
         return WrapperListDelegate(wrapperFactory, key)
     }
 
@@ -41,9 +39,9 @@ abstract class Wrapper(val data: IJsonObject) {
     }
 
     protected fun jsonObject(
-        initial: IJsonObject = data.createObject(),
+        initial: JsonObject = JsonObject(),
         key: String? = null
-    ): SerializerDelegate<IJsonObject> {
+    ): SerializerDelegate<JsonObject> {
         return serializer(Serializers.JSON_OBJECT, initial, key)
     }
 

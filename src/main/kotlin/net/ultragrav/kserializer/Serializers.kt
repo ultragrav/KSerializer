@@ -1,6 +1,5 @@
 package net.ultragrav.kserializer
 
-import net.ultragrav.kserializer.json.IJsonObject
 import net.ultragrav.kserializer.json.JsonArray
 import net.ultragrav.kserializer.json.JsonIndexable
 import net.ultragrav.kserializer.json.JsonObject
@@ -95,16 +94,16 @@ object Serializers {
         }
     }
 
-    val JSON_OBJECT = object : JsonDataSerializer<IJsonObject> {
-        override fun <K> serialize(data: JsonIndexable<K>, key: K, value: IJsonObject): Any? {
+    val JSON_OBJECT = object : JsonDataSerializer<JsonObject> {
+        override fun <K> serialize(data: JsonIndexable<K>, key: K, value: JsonObject): Any? {
             return data.setObject(key, value)
         }
 
-        override fun <K> deserialize(data: JsonIndexable<K>, key: K): IJsonObject {
+        override fun <K> deserialize(data: JsonIndexable<K>, key: K): JsonObject {
             return data.getObject(key)
         }
 
-        override fun serializeAdd(data: JsonArray, value: IJsonObject, index: Int) {
+        override fun serializeAdd(data: JsonArray, value: JsonObject, index: Int) {
             data.addObject(value, index)
         }
     }

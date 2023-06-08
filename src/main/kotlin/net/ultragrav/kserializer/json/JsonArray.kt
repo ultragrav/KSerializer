@@ -1,9 +1,12 @@
 package net.ultragrav.kserializer.json
 
+import net.ultragrav.kserializer.serialization.TinySerializer
 import net.ultragrav.kserializer.updates.ArrayUpdateTracker
+import net.ultragrav.serializer.GravSerializable
+import net.ultragrav.serializer.GravSerializer
 import java.util.concurrent.locks.ReentrantReadWriteLock
 
-open class JsonArray(initialSize: Int = 8) : JsonIndexable<Int> {
+open class JsonArray(initialSize: Int = 8) : JsonIndexable<Int>, GravSerializable {
     var trackingUpdates = false
         set(value) {
             if (value) {
@@ -49,9 +52,9 @@ open class JsonArray(initialSize: Int = 8) : JsonIndexable<Int> {
     override fun setString(key: Int, value: String): Any? = internalSet(key, value)
     fun addString(value: String, index: Int = -1) = internalAdd(value, index)
 
-    override fun getObject(key: Int): IJsonObject = readLocked { return backingList[key] as JsonObject }
-    override fun setObject(key: Int, data: IJsonObject): Any? = internalSet(key, data)
-    fun addObject(data: IJsonObject, index: Int = -1) = internalAdd(data, index)
+    override fun getObject(key: Int): JsonObject = readLocked { return backingList[key] as JsonObject }
+    override fun setObject(key: Int, data: JsonObject): Any? = internalSet(key, data)
+    fun addObject(data: JsonObject, index: Int = -1) = internalAdd(data, index)
 
     override fun getArray(key: Int): JsonArray = readLocked { return backingList[key] as JsonArray }
     override fun setArray(key: Int, array: JsonArray): Any? = internalSet(key, array)
@@ -147,5 +150,11 @@ open class JsonArray(initialSize: Int = 8) : JsonIndexable<Int> {
         }
         builder.append("]")
         return builder.toString()
+    }
+
+    override fun serialize(serializer: GravSerializer) = TinySerializer.write(serializer, this)
+
+    companion object {
+        fun deserialize(serializer: GravSerializer): JsonArray = TinySerializer.read(serializer) as JsonArray
     }
 }
