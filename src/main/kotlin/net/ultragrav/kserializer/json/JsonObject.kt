@@ -10,8 +10,13 @@ open class JsonObject(initialCapacity: Int = 8) : JsonIndexable<String>, GravSer
 
     override val size get() = readLocked { backingMap.size }
 
-    private val lock: ReentrantReadWriteLock = ReentrantReadWriteLock()
-    private inline fun <T> readLocked(block: () -> T): T {
+    protected val lock: ReentrantReadWriteLock = ReentrantReadWriteLock()
+
+    open fun createObject(): JsonObject {
+        return JsonObject()
+    }
+
+    protected inline fun <T> readLocked(block: () -> T): T {
         try {
             lock.readLock().lock()
             return block()
@@ -20,7 +25,7 @@ open class JsonObject(initialCapacity: Int = 8) : JsonIndexable<String>, GravSer
         }
     }
 
-    private inline fun <T> writeLocked(block: () -> T): T {
+    protected inline fun <T> writeLocked(block: () -> T): T {
         try {
             lock.writeLock().lock()
             return block()
@@ -64,12 +69,18 @@ open class JsonObject(initialCapacity: Int = 8) : JsonIndexable<String>, GravSer
     override fun clear() = writeLocked { backingMap.clear() }
 
     fun asMap(): Map<String, Any?> = backingMap.mapValues {
-        if (it is JsonArray) {
-            it.asList()
-        } else if (it is JsonObject) {
-            it.asMap()
-        } else {
-            it
+        when (it) {
+            is JsonArray -> {
+                it.asList()
+            }
+
+            is JsonObject -> {
+                it.asMap()
+            }
+
+            else -> {
+                it
+            }
         }
     }
 
