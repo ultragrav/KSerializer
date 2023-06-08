@@ -111,6 +111,7 @@ open class JsonObject(initialCapacity: Int = 8) : JsonIndexable<String>, GravSer
     override fun serialize(serializer: GravSerializer) = TinySerializer.write(serializer, this)
 
     companion object {
+        @JvmStatic
         fun deserialize(serializer: GravSerializer): JsonObject = TinySerializer.read(serializer) as JsonObject
     }
 }
