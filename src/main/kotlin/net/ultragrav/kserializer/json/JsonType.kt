@@ -61,6 +61,18 @@ interface JsonType<T> {
                 return indexable.getByteArray(index)
             }
         }
+
+        fun of(value: Any?): JsonType<*> {
+            return when (value) {
+                is String -> STRING
+                is JsonObject -> OBJECT
+                is JsonArray -> ARRAY
+                is Number -> NUMBER
+                is Boolean -> BOOLEAN
+                is ByteArray -> BYTE_ARRAY
+                else -> throw IllegalArgumentException("Unknown type: $value")
+            }
+        }
     }
 
     fun <I> write(indexable: JsonIndexable<I>, index: I, value: T)
