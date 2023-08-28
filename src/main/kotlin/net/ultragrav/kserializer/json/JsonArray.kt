@@ -72,6 +72,19 @@ open class JsonArray(initialSize: Int = 8) : JsonIndexable<Int>, GravSerializabl
     override fun setByteArray(key: Int, byteArray: ByteArray): Any? = internalSet(key, byteArray)
     fun addByteArray(byteArray: ByteArray, index: Int = -1) = internalAdd(byteArray, index)
 
+    override fun type(key: Int): JsonType<*> {
+        return when (val value = backingList[key]) {
+            is String -> JsonType.STRING
+            is JsonObject -> JsonType.OBJECT
+            is JsonArray -> JsonType.ARRAY
+            is Number -> JsonType.NUMBER
+            is Boolean -> JsonType.BOOLEAN
+            is ByteArray -> JsonType.BYTE_ARRAY
+            null -> throw IllegalArgumentException("Key $key does not exist")
+            else -> throw IllegalArgumentException("Invalid value type: ${value::class.java}")
+        }
+    }
+
     override fun remove(key: Int) = writeLocked {
         backingList.removeAt(key)
         if (trackingUpdates) {
@@ -121,12 +134,10 @@ open class JsonArray(initialSize: Int = 8) : JsonIndexable<Int>, GravSerializabl
     }
 
     fun asList(): List<Any?> = backingList.map {
-        if (it is JsonObject) {
-            it.asMap()
-        } else if (it is JsonArray) {
-            it.asList()
-        } else {
-            it
+        when (it) {
+            is JsonObject -> it.asMap()
+            is JsonArray -> it.asList()
+            else -> it
         }
     }
 

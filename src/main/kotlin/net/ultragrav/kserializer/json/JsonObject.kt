@@ -60,6 +60,19 @@ open class JsonObject(initialCapacity: Int = 8) : JsonIndexable<String>, GravSer
     override fun getByteArray(key: String): ByteArray = internalGet(key)
     override fun setByteArray(key: String, byteArray: ByteArray): Any? = internalSet(key, byteArray)
 
+    override fun type(key: String): JsonType<*> {
+        return when (val value = backingMap[key]) {
+            is String -> JsonType.STRING
+            is JsonObject -> JsonType.OBJECT
+            is JsonArray -> JsonType.ARRAY
+            is Number -> JsonType.NUMBER
+            is Boolean -> JsonType.BOOLEAN
+            is ByteArray -> JsonType.BYTE_ARRAY
+            null -> throw IllegalArgumentException("Key $key does not exist")
+            else -> throw IllegalArgumentException("Invalid value type: ${value::class.java}")
+        }
+    }
+
     override fun contains(key: String): Boolean {
         return backingMap.containsKey(key)
     }
@@ -101,6 +114,7 @@ open class JsonObject(initialCapacity: Int = 8) : JsonIndexable<String>, GravSer
                 is JsonArray -> builder.append(value.toString())
                 is Number -> builder.append(value.toString())
                 is Boolean -> builder.append(value.toString())
+                is ByteArray -> builder.append(String(value)) // TODO: Better display
                 else -> throw IllegalArgumentException("Invalid value type: ${value::class.java}")
             }
         }
