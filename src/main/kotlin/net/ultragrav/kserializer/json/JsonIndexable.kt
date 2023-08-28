@@ -44,4 +44,5 @@ interface JsonIndexable<T> {
     fun contains(key: T): Boolean
 
     val size: Int
+    val keys: Iterable<T>
 }

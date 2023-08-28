@@ -9,6 +9,7 @@ open class JsonObject(initialCapacity: Int = 8) : JsonIndexable<String>, GravSer
     internal val backingMap = LinkedHashMap<String, Any>(initialCapacity)
 
     override val size get() = readLocked { backingMap.size }
+    override val keys get() = readLocked { backingMap.keys }
 
     protected val lock: ReentrantReadWriteLock = ReentrantReadWriteLock()
 

@@ -43,6 +43,7 @@ open class JsonArray(initialSize: Int = 8) : JsonIndexable<Int>, GravSerializabl
     }
 
     override val size get() = backingList.size
+    override val keys get() = backingList.indices
 
     constructor(list: List<Any?>) : this() {
         backingList.addAll(list)
