@@ -62,7 +62,8 @@ interface JsonType<T> {
             }
         }
 
-        fun of(value: Any?): JsonType<*> {
+        @Suppress("UNCHECKED_CAST")
+        fun <T> of(value: T): JsonType<T> {
             return when (value) {
                 is String -> STRING
                 is JsonObject -> OBJECT
@@ -71,7 +72,7 @@ interface JsonType<T> {
                 is Boolean -> BOOLEAN
                 is ByteArray -> BYTE_ARRAY
                 else -> throw IllegalArgumentException("Unknown type: $value")
-            }
+            } as JsonType<T>
         }
     }
 
