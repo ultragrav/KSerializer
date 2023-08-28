@@ -26,6 +26,13 @@ interface JsonIndexable<T> {
     fun <R> set(key: T, type: JsonType<R>, value: R) {
         type.write(this, key, value)
     }
+    fun set(key: T, value: Any?) {
+        if (value == null) {
+            remove(key)
+        } else {
+            set(key, JsonType.of(value), value)
+        }
+    }
 
     fun remove(key: T): Any?
     fun clear()
