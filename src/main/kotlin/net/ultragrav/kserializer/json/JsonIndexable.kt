@@ -23,6 +23,10 @@ interface JsonIndexable<T> {
     fun <R> get(key: T, type: JsonType<R>): R {
         return type.read(this, key)
     }
+    @Suppress("UNCHECKED_CAST")
+    fun <R> get(key: T): R {
+        return get(key, type(key)) as R
+    }
     fun <R> set(key: T, type: JsonType<R>, value: R) {
         type.write(this, key, value)
     }
