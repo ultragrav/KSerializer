@@ -6,9 +6,11 @@ import net.ultragrav.kserializer.delegates.WrapperDelegate
 import net.ultragrav.kserializer.delegates.WrapperListDelegate
 import net.ultragrav.kserializer.json.JsonArray
 import net.ultragrav.kserializer.json.JsonObject
+import net.ultragrav.kserializer.json.JsonType
 import net.ultragrav.kserializer.serialization.JsonDataSerializer
 import java.math.BigDecimal
 import java.math.BigInteger
+import java.util.*
 
 abstract class Wrapper(val data: JsonObject) {
     protected fun <T : Any> serializer(
@@ -42,21 +44,21 @@ abstract class Wrapper(val data: JsonObject) {
         initial: JsonObject = data.createObject(),
         key: String? = null
     ): SerializerDelegate<JsonObject> {
-        return serializer(Serializers.JSON_OBJECT, initial, key)
+        return serializer(JsonType.OBJECT, initial, key)
     }
 
     protected fun jsonArray(
         initial: JsonArray = JsonArray(),
         key: String? = null
     ): SerializerDelegate<JsonArray> {
-        return serializer(Serializers.JSON_ARRAY, initial, key)
+        return serializer(JsonType.ARRAY, initial, key)
     }
 
     protected fun string(
         initial: String,
         key: String? = null
     ): SerializerDelegate<String> {
-        return serializer(Serializers.STRING, initial, key)
+        return serializer(JsonType.STRING, initial, key)
     }
 
     protected fun int(
@@ -91,14 +93,14 @@ abstract class Wrapper(val data: JsonObject) {
         initial: Boolean,
         key: String? = null
     ): SerializerDelegate<Boolean> {
-        return serializer(Serializers.BOOLEAN, initial, key)
+        return serializer(JsonType.BOOLEAN, initial, key)
     }
 
     protected fun byteArray(
         initial: ByteArray,
         key: String? = null
     ): SerializerDelegate<ByteArray> {
-        return serializer(Serializers.BYTE_ARRAY, initial, key)
+        return serializer(JsonType.GENERIC_BINARY, initial, key)
     }
 
     protected fun bigInteger(
@@ -113,5 +115,19 @@ abstract class Wrapper(val data: JsonObject) {
         key: String? = null
     ): SerializerDelegate<BigDecimal> {
         return serializer(Serializers.BIG_DECIMAL, initial, key)
+    }
+
+    protected fun date(
+        initial: Date,
+        key: String? = null
+    ): SerializerDelegate<Date> {
+        return serializer(JsonType.DATE, initial, key)
+    }
+
+    protected fun uuid(
+        initial: UUID,
+        key: String? = null
+    ): SerializerDelegate<UUID> {
+        return serializer(JsonType.UUID, initial, key)
     }
 }

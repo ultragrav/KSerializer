@@ -8,8 +8,11 @@ import kotlinx.serialization.descriptors.StructureKind
 import kotlinx.serialization.encoding.CompositeDecoder
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.modules.SerializersModule
+import net.ultragrav.kserializer.json.BsonBinaryType
 import net.ultragrav.kserializer.json.JsonIndexable
 import net.ultragrav.kserializer.json.JsonObject
+import net.ultragrav.kserializer.util.toUUID
+import java.util.*
 
 @OptIn(ExperimentalSerializationApi::class)
 internal class JsonDecoder<T>(
@@ -88,7 +91,18 @@ internal class JsonDecoder<T>(
     }
 
     private fun decodeByteArray(): ByteArray {
-        return json.getByteArray(key!!)
+        return json.getBinary(key!!).value
+    }
+
+    fun decodeDate(): Date {
+        return json.getDate(key!!)
+    }
+
+    fun decodeUUID(): UUID {
+        val binary = json.getBinary(key!!)
+        if (binary.type != BsonBinaryType.UUID)
+            throw IllegalArgumentException("Expected UUID, got ${binary.type}")
+        return binary.value.toUUID()
     }
 
     @Suppress("UNCHECKED_CAST")

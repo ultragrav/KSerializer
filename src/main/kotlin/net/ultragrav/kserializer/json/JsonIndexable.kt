@@ -1,5 +1,7 @@
 package net.ultragrav.kserializer.json
 
+import java.util.Date
+
 interface JsonIndexable<T> {
     fun getString(key: T): String
     fun setString(key: T, value: String): Any?
@@ -16,8 +18,13 @@ interface JsonIndexable<T> {
     fun getBoolean(key: T): Boolean
     fun setBoolean(key: T, boolean: Boolean): Any?
 
-    fun getByteArray(key: T): ByteArray
-    fun setByteArray(key: T, byteArray: ByteArray): Any?
+    fun getBinary(key: T): BsonBinary
+    fun setBinary(key: T, binary: BsonBinary): Any?
+    fun setBinary(key: T, type: BsonBinaryType, value: ByteArray): Any? = setBinary(key, BsonBinary(type, value))
+    fun setBinary(key: T, value: ByteArray): Any? = setBinary(key, BsonBinaryType.GENERIC, value)
+
+    fun getDate(key: T): Date
+    fun setDate(key: T, date: Date): Any?
 
     fun type(key: T): JsonType<*>
     fun <R> get(key: T, type: JsonType<R>): R {

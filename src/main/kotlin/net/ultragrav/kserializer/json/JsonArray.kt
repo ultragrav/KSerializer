@@ -4,7 +4,9 @@ import net.ultragrav.kserializer.serialization.TinySerializer
 import net.ultragrav.kserializer.updates.ArrayUpdateTracker
 import net.ultragrav.serializer.GravSerializable
 import net.ultragrav.serializer.GravSerializer
+import java.util.*
 import java.util.concurrent.locks.ReentrantReadWriteLock
+import kotlin.collections.ArrayList
 
 open class JsonArray(initialSize: Int = 8) : JsonIndexable<Int>, GravSerializable {
     var trackingUpdates = false
@@ -69,21 +71,18 @@ open class JsonArray(initialSize: Int = 8) : JsonIndexable<Int>, GravSerializabl
     override fun setBoolean(key: Int, boolean: Boolean): Any? = internalSet(key, boolean)
     fun addBoolean(boolean: Boolean, index: Int = -1) = internalAdd(boolean, index)
 
-    override fun getByteArray(key: Int): ByteArray = readLocked { return backingList[key] as ByteArray }
-    override fun setByteArray(key: Int, byteArray: ByteArray): Any? = internalSet(key, byteArray)
-    fun addByteArray(byteArray: ByteArray, index: Int = -1) = internalAdd(byteArray, index)
+    override fun getBinary(key: Int): BsonBinary = readLocked { return backingList[key] as BsonBinary }
+    override fun setBinary(key: Int, binary: BsonBinary): Any? = internalSet(key, binary)
+    fun addBinary(binary: BsonBinary, index: Int = -1) = internalAdd(binary, index)
+    fun addBinary(type: BsonBinaryType, value: ByteArray, index: Int = -1) = addBinary(BsonBinary(type, value), index)
+    fun addBinary(value: ByteArray, index: Int = -1) = addBinary(BsonBinaryType.GENERIC, value, index)
+
+    override fun getDate(key: Int): Date = readLocked { return backingList[key] as Date }
+    override fun setDate(key: Int, value: Date): Any? = internalSet(key, value)
+    fun addDate(value: Date, index: Int = -1) = internalAdd(value, index)
 
     override fun type(key: Int): JsonType<*> {
-        return when (val value = backingList[key]) {
-            is String -> JsonType.STRING
-            is JsonObject -> JsonType.OBJECT
-            is JsonArray -> JsonType.ARRAY
-            is Number -> JsonType.NUMBER
-            is Boolean -> JsonType.BOOLEAN
-            is ByteArray -> JsonType.BYTE_ARRAY
-            null -> throw IllegalArgumentException("Key $key does not exist")
-            else -> throw IllegalArgumentException("Invalid value type: ${value::class.java}")
-        }
+        return JsonType.of(backingList[key])
     }
 
     fun add(value: Any?, index: Int = -1) = JsonType.of(value).write(this, index, value)

@@ -64,7 +64,7 @@ internal class JsonCompositeEncoder<T>(
     }
 
     fun encodeByteArrayElement(descriptor: SerialDescriptor, index: Int, value: ByteArray) {
-        json.setByteArray(getKey(descriptor, index), value)
+        json.setBinary(getKey(descriptor, index), value)
     }
 
     override fun endStructure(descriptor: SerialDescriptor) {}

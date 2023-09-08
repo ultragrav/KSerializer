@@ -1,6 +1,7 @@
 import net.ultragrav.kserializer.Serializers
 import net.ultragrav.kserializer.Wrapper
 import net.ultragrav.kserializer.json.JsonObject
+import net.ultragrav.kserializer.json.JsonType
 
 class TestWrapper(data: JsonObject) : Wrapper(data) {
     var test by string("Test")

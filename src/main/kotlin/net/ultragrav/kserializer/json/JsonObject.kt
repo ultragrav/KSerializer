@@ -3,7 +3,9 @@ package net.ultragrav.kserializer.json
 import net.ultragrav.kserializer.serialization.TinySerializer
 import net.ultragrav.serializer.GravSerializable
 import net.ultragrav.serializer.GravSerializer
+import java.util.*
 import java.util.concurrent.locks.ReentrantReadWriteLock
+import kotlin.collections.LinkedHashMap
 
 open class JsonObject(initialCapacity: Int = 8) : JsonIndexable<String>, GravSerializable {
     internal val backingMap = LinkedHashMap<String, Any>(initialCapacity)
@@ -58,20 +60,14 @@ open class JsonObject(initialCapacity: Int = 8) : JsonIndexable<String>, GravSer
     override fun getBoolean(key: String): Boolean = internalGet(key)
     override fun setBoolean(key: String, boolean: Boolean): Any? = internalSet(key, boolean)
 
-    override fun getByteArray(key: String): ByteArray = internalGet(key)
-    override fun setByteArray(key: String, byteArray: ByteArray): Any? = internalSet(key, byteArray)
+    override fun getBinary(key: String): BsonBinary = internalGet(key)
+    override fun setBinary(key: String, binary: BsonBinary): Any? = internalSet(key, binary)
+
+    override fun getDate(key: String): Date = internalGet(key)
+    override fun setDate(key: String, date: Date) = internalSet(key, date)
 
     override fun type(key: String): JsonType<*> {
-        return when (val value = backingMap[key]) {
-            is String -> JsonType.STRING
-            is JsonObject -> JsonType.OBJECT
-            is JsonArray -> JsonType.ARRAY
-            is Number -> JsonType.NUMBER
-            is Boolean -> JsonType.BOOLEAN
-            is ByteArray -> JsonType.BYTE_ARRAY
-            null -> throw IllegalArgumentException("Key $key does not exist")
-            else -> throw IllegalArgumentException("Invalid value type: ${value::class.java}")
-        }
+        return JsonType.of(backingMap[key])
     }
 
     override fun contains(key: String): Boolean {

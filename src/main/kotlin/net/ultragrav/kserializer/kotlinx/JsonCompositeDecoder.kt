@@ -7,6 +7,7 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.CompositeDecoder
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.modules.SerializersModule
+import net.ultragrav.kserializer.json.BsonBinaryType
 import net.ultragrav.kserializer.json.JsonArray
 import net.ultragrav.kserializer.json.JsonIndexable
 import net.ultragrav.kserializer.json.JsonObject
@@ -88,7 +89,10 @@ internal class JsonCompositeDecoder<T>(
     }
 
     fun decodeByteArrayElement(descriptor: SerialDescriptor, index: Int): ByteArray {
-        return json.getByteArray(getKey(descriptor, index))
+        val binary = json.getBinary(getKey(descriptor, index))
+        if (binary.type != BsonBinaryType.GENERIC)
+            throw IllegalArgumentException("Expected generic binary, got ${binary.type}")
+        return binary.value
     }
 
     override fun endStructure(descriptor: SerialDescriptor) {}

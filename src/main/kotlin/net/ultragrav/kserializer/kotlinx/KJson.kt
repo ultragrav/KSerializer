@@ -3,12 +3,17 @@ package net.ultragrav.kserializer.kotlinx
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.modules.EmptySerializersModule
+import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.serializer
 import net.ultragrav.kserializer.json.JsonObject
 import net.ultragrav.serializer.GravSerializer
+import java.util.*
 
 object KJson {
-    val serializersModule = EmptySerializersModule()
+    val serializersModule = SerializersModule {
+        contextual(Date::class, DateSerializer)
+        contextual(UUID::class, UUIDSerializer)
+    }
 
     fun <T> encode(serializer: SerializationStrategy<T>, obj: T): JsonObject {
         val encoder = JsonEncoder(serializersModule, JsonObject())

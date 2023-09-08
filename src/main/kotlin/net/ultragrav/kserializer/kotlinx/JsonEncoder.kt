@@ -8,9 +8,12 @@ import kotlinx.serialization.descriptors.StructureKind
 import kotlinx.serialization.encoding.CompositeEncoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.modules.SerializersModule
+import net.ultragrav.kserializer.json.BsonBinaryType
 import net.ultragrav.kserializer.json.JsonArray
 import net.ultragrav.kserializer.json.JsonIndexable
 import net.ultragrav.kserializer.json.JsonObject
+import net.ultragrav.kserializer.util.toBytes
+import java.util.*
 
 @OptIn(ExperimentalSerializationApi::class)
 internal class JsonEncoder<T>(
@@ -25,6 +28,7 @@ internal class JsonEncoder<T>(
                 json.setArray(key!!, encoder.json as JsonArray)
                 encoder
             }
+
             else -> {
                 if (key == null) {
                     JsonCompositeEncoder(serializersModule, json as JsonObject)
@@ -86,7 +90,15 @@ internal class JsonEncoder<T>(
     }
 
     private fun encodeByteArray(value: ByteArray) {
-        json.setByteArray(key!!, value)
+        json.setBinary(key!!, value)
+    }
+
+    fun encodeDate(value: Date) {
+        json.setDate(key!!, value)
+    }
+
+    fun encodeUUID(value: UUID) {
+        json.setBinary(key!!, BsonBinaryType.UUID, value.toBytes())
     }
 
     override fun <T> encodeSerializableValue(serializer: SerializationStrategy<T>, value: T) {
