@@ -63,7 +63,7 @@ internal class JsonCompositeEncoder<T>(
         json.setString(getKey(descriptor, index), value)
     }
 
-    fun encodeByteArrayElement(descriptor: SerialDescriptor, index: Int, value: ByteArray) {
+    private fun encodeByteArrayElement(descriptor: SerialDescriptor, index: Int, value: ByteArray) {
         json.setBinary(getKey(descriptor, index), value)
     }
 

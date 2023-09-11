@@ -1,6 +1,22 @@
 package net.ultragrav.kserializer.json
 
-data class BsonBinary(val type: BsonBinaryType, val value: ByteArray)
+data class BsonBinary(val type: BsonBinaryType, val value: ByteArray) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as BsonBinary
+
+        if (type != other.type) return false
+        return value.contentEquals(other.value)
+    }
+
+    override fun hashCode(): Int {
+        var result = type.hashCode()
+        result = 31 * result + value.contentHashCode()
+        return result
+    }
+}
 
 enum class BsonBinaryType(val id: Byte) {
     GENERIC(0x0),
