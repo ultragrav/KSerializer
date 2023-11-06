@@ -27,17 +27,17 @@ interface JsonIndexable<T> {
     fun setDate(key: T, date: Date): Any?
 
     fun type(key: T): JsonType<*>
-    fun <R> get(key: T, type: JsonType<R>): R {
+    operator fun <R> get(key: T, type: JsonType<R>): R {
         return type.read(this, key)
     }
     @Suppress("UNCHECKED_CAST")
-    fun <R> get(key: T): R {
+    operator fun <R> get(key: T): R {
         return get(key, type(key)) as R
     }
-    fun <R> set(key: T, type: JsonType<R>, value: R) {
+    operator fun <R> set(key: T, type: JsonType<R>, value: R) {
         type.write(this, key, value)
     }
-    fun set(key: T, value: Any?) {
+    operator fun set(key: T, value: Any?) {
         if (value == null) {
             remove(key)
         } else {
@@ -48,7 +48,7 @@ interface JsonIndexable<T> {
     fun remove(key: T): Any?
     fun clear()
 
-    fun contains(key: T): Boolean
+    operator fun contains(key: T): Boolean
 
     val size: Int
     val keys: Iterable<T>
