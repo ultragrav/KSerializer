@@ -1,5 +1,7 @@
 package net.ultragrav.kserializer.serialization
 
+import net.ultragrav.kserializer.json.BsonBinary
+import net.ultragrav.kserializer.json.BsonBinaryType
 import net.ultragrav.kserializer.json.JsonArray
 import net.ultragrav.kserializer.json.JsonObject
 import net.ultragrav.serializer.GravSerializer
@@ -45,17 +47,24 @@ object TinySerializer {
                 serializer.writeInt(data.size)
                 serializer.append(data)
             }
+
+            is BsonBinary -> {
+                serializer.writeByte(8)
+                serializer.writeByte(data.type.id)
+                serializer.writeByteArray(data.value)
+            }
+
+            else -> throw IllegalArgumentException("Unknown type: ${data::class.java}")
         }
     }
 
     fun read(serializer: GravSerializer): Any? {
-        val type = serializer.readByte().toInt()
-        when (type) {
+        when (val type = serializer.readByte().toInt()) {
             0 -> return null
             1 -> {
                 val size = serializer.readInt()
                 val obj = JsonObject(size)
-                for (i in 0 until size) {
+                for (i in 0..<size) {
                     val key = serializer.readString()
                     val value = read(serializer) ?: continue
                     obj.backingMap[key] = value
@@ -66,7 +75,7 @@ object TinySerializer {
             2 -> {
                 val size = serializer.readInt()
                 val array = JsonArray(size)
-                for (i in 0 until size) {
+                for (i in 0..<size) {
                     val value = read(serializer) ?: continue
                     array.backingList.add(value)
                 }
@@ -86,6 +95,11 @@ object TinySerializer {
             7 -> {
                 val size = serializer.readInt()
                 return serializer.readBytes(size)
+            }
+            8 -> {
+                val bsonType = BsonBinaryType.byId(serializer.readByte()) ?: throw IllegalArgumentException("Unknown binary type: $type")
+                val value = serializer.readByteArray()
+                return BsonBinary(bsonType, value)
             }
             else -> throw IllegalArgumentException("Unknown type: $type")
         }

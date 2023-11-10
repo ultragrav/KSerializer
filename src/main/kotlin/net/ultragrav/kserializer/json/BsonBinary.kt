@@ -27,5 +27,11 @@ enum class BsonBinaryType(val id: Byte) {
     MD5(0x5),
     ENCRYPTED(0x6),
     COLUMN(0x7),
-    USER_DEFINED(0x80.toByte())
+    USER_DEFINED(0x80.toByte());
+
+    companion object {
+        fun byId(byte: Byte): BsonBinaryType? {
+            return entries.firstOrNull { it.id == byte }
+        }
+    }
 }
