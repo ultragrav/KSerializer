@@ -85,7 +85,8 @@ open class JsonArray(initialSize: Int = 8) : JsonIndexable<Int>, GravSerializabl
         return JsonType.of(backingList[key])
     }
 
-    fun add(value: Any?, index: Int = -1) = JsonType.of(value).write(this, index, value)
+    fun add(value: Any?, index: Int = -1) = JsonType.of(value)
+        .write(this, if (index == -1) size else index, value)
 
     override fun remove(key: Int) = writeLocked {
         backingList.removeAt(key)
