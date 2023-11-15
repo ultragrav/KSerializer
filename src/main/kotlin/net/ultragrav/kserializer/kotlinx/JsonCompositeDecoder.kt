@@ -21,7 +21,6 @@ internal class JsonCompositeDecoder<T>(
     val getKey: (SerialDescriptor, Int) -> T = when (json) {
         is JsonObject -> { descriptor, index -> descriptor.getElementName(index) as T }
         is JsonArray -> { _, index -> index as T }
-        else -> throw UnsupportedOperationException()
     }
 
     override fun decodeSequentially(): Boolean = true

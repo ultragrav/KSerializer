@@ -80,7 +80,7 @@ open class JsonArray(initialSize: Int = 8) : JsonIndexable<Int>, GravSerializabl
     fun addBinary(value: ByteArray, index: Int = -1) = addBinary(BsonBinaryType.GENERIC, value, index)
 
     override fun getDate(key: Int): Date = readLocked { return backingList[key] as Date }
-    override fun setDate(key: Int, value: Date): Any? = internalSet(key, value)
+    override fun setDate(key: Int, date: Date): Any? = internalSet(key, date)
     fun addDate(value: Date, index: Int = -1) = internalAdd(value, index)
 
     override fun type(key: Int): JsonType<*> {
@@ -111,7 +111,7 @@ open class JsonArray(initialSize: Int = 8) : JsonIndexable<Int>, GravSerializabl
     }
 
     override fun contains(key: Int): Boolean {
-        return key in 0 until size
+        return key in 0..<size
     }
 
 
@@ -155,7 +155,7 @@ open class JsonArray(initialSize: Int = 8) : JsonIndexable<Int>, GravSerializabl
         // Convert to JSON string
         val builder = StringBuilder()
         builder.append("[")
-        for (i in 0 until size) {
+        for (i in 0..<size) {
             when (val value = backingList[i]) {
                 null -> builder.append("null")
                 is String -> builder.append("\"$value\"")
