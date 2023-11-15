@@ -51,6 +51,8 @@ open class JsonArray(initialSize: Int = 8) : JsonIndexable<Int>, GravSerializabl
         backingList.addAll(list)
     }
 
+    fun addNull(index: Int = -1) = internalAdd(null, index)
+
     override fun getString(key: Int): String = readLocked { return backingList[key] as String }
     override fun setString(key: Int, value: String): Any? = internalSet(key, value)
     fun addString(value: String, index: Int = -1) = internalAdd(value, index)
@@ -83,6 +85,11 @@ open class JsonArray(initialSize: Int = 8) : JsonIndexable<Int>, GravSerializabl
 
     override fun type(key: Int): JsonType<*> {
         return JsonType.of(backingList[key])
+    }
+
+    override fun <R> get(key: Int): R = readLocked {
+        @Suppress("UNCHECKED_CAST")
+        backingList[key] as R
     }
 
     fun add(value: Any?, index: Int = -1) = JsonType.of(value)

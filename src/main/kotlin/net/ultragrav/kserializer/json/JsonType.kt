@@ -8,6 +8,20 @@ import java.util.UUID
 
 interface JsonType<T> : JsonDataSerializer<T> {
     companion object {
+        val NULL = object : JsonType<Void?> {
+            override fun <I> write(indexable: JsonIndexable<I>, index: I, value: Void?): Any? {
+                return indexable.remove(index)
+            }
+
+            override fun <I> read(indexable: JsonIndexable<I>, index: I): Void? {
+                return null
+            }
+
+            override fun add(array: JsonArray, value: Void?, index: Int) {
+                array.addNull()
+            }
+        }
+
         val STRING = object : JsonType<String> {
             override fun <I> write(indexable: JsonIndexable<I>, index: I, value: String): Any? {
                 return indexable.setString(index, value)
@@ -145,6 +159,7 @@ interface JsonType<T> : JsonDataSerializer<T> {
         @Suppress("UNCHECKED_CAST")
         fun <T> of(value: T): JsonType<T> {
             return when (value) {
+                null -> NULL
                 is String -> STRING
                 is JsonObject -> OBJECT
                 is JsonArray -> ARRAY

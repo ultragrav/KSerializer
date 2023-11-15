@@ -1,9 +1,6 @@
 package net.ultragrav.kserializer.serialization
 
-import net.ultragrav.kserializer.json.BsonBinary
-import net.ultragrav.kserializer.json.BsonBinaryType
-import net.ultragrav.kserializer.json.JsonArray
-import net.ultragrav.kserializer.json.JsonObject
+import net.ultragrav.kserializer.json.*
 import net.ultragrav.serializer.GravSerializer
 
 object TinySerializer {
@@ -13,18 +10,18 @@ object TinySerializer {
 
             is JsonObject -> {
                 serializer.writeByte(1)
-                serializer.writeInt(data.backingMap.size)
-                for ((key, value) in data.backingMap) {
+                serializer.writeInt(data.size)
+                for (key in data.keys) {
                     serializer.writeString(key)
-                    write(serializer, value)
+                    write(serializer, data[key])
                 }
             }
 
             is JsonArray -> {
                 serializer.writeByte(2)
-                serializer.writeInt(data.backingList.size)
-                for (value in data.backingList) {
-                    write(serializer, value)
+                serializer.writeInt(data.size)
+                for (key in data.keys) {
+                    write(serializer, data[key])
                 }
             }
 
@@ -42,12 +39,6 @@ object TinySerializer {
             true -> serializer.writeByte(5)
             false -> serializer.writeByte(6)
 
-            is ByteArray -> {
-                serializer.writeByte(7)
-                serializer.writeInt(data.size)
-                serializer.append(data)
-            }
-
             is BsonBinary -> {
                 serializer.writeByte(8)
                 serializer.writeByte(data.type.id)
@@ -58,48 +49,51 @@ object TinySerializer {
         }
     }
 
-    fun read(serializer: GravSerializer): Any? {
+    fun read(serializer: GravSerializer): Any? = readJson(serializer).value
+
+    fun readJson(serializer: GravSerializer): JsonValue<*> {
         when (val type = serializer.readByte().toInt()) {
-            0 -> return null
+            0 -> return JsonValue(null, JsonType.NULL)
             1 -> {
                 val size = serializer.readInt()
                 val obj = JsonObject(size)
                 for (i in 0..<size) {
                     val key = serializer.readString()
-                    val value = read(serializer) ?: continue
-                    obj.backingMap[key] = value
+                    val value = readJson(serializer)
+                    value.write(obj, key)
                 }
-                return obj
+                return JsonValue(obj, JsonType.OBJECT)
             }
 
             2 -> {
                 val size = serializer.readInt()
                 val array = JsonArray(size)
                 for (i in 0..<size) {
-                    val value = read(serializer) ?: continue
-                    array.backingList.add(value)
+                    val value = readJson(serializer)
+                    value.add(array)
                 }
-                return array
+                return JsonValue(array, JsonType.ARRAY)
             }
 
             3 -> {
-                return serializer.readString()
+                return JsonValue(serializer.readString(), JsonType.STRING)
             }
 
             4 -> {
-                return serializer.readDouble()
+                return JsonValue(serializer.readDouble(), JsonType.NUMBER)
             }
 
-            5 -> return true
-            6 -> return false
+            5 -> return JsonValue(true, JsonType.BOOLEAN)
+            6 -> return JsonValue(false, JsonType.BOOLEAN)
             7 -> {
+                // Deprecated
                 val size = serializer.readInt()
-                return serializer.readBytes(size)
+                return JsonValue(serializer.readBytes(size), JsonType.GENERIC_BINARY)
             }
             8 -> {
                 val bsonType = BsonBinaryType.byId(serializer.readByte()) ?: throw IllegalArgumentException("Unknown binary type: $type")
                 val value = serializer.readByteArray()
-                return BsonBinary(bsonType, value)
+                return JsonValue(BsonBinary(bsonType, value), JsonType.BINARY)
             }
             else -> throw IllegalArgumentException("Unknown type: $type")
         }

@@ -2,7 +2,7 @@ package net.ultragrav.kserializer.json
 
 import java.util.Date
 
-interface JsonIndexable<T> {
+sealed interface JsonIndexable<T> {
     fun getString(key: T): String
     fun setString(key: T, value: String): Any?
 

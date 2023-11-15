@@ -5,10 +5,9 @@ import net.ultragrav.serializer.GravSerializable
 import net.ultragrav.serializer.GravSerializer
 import java.util.*
 import java.util.concurrent.locks.ReentrantReadWriteLock
-import kotlin.collections.LinkedHashMap
 
 open class JsonObject(initialCapacity: Int = 8) : JsonIndexable<String>, GravSerializable {
-    internal val backingMap = LinkedHashMap<String, Any>(initialCapacity)
+    private val backingMap = LinkedHashMap<String, Any>(initialCapacity)
 
     override val size get() = readLocked { backingMap.size }
     override val keys get() = readLocked { backingMap.keys }
@@ -19,7 +18,7 @@ open class JsonObject(initialCapacity: Int = 8) : JsonIndexable<String>, GravSer
         return JsonObject()
     }
 
-    protected inline fun <T> readLocked(block: () -> T): T {
+    private inline fun <T> readLocked(block: () -> T): T {
         try {
             lock.readLock().lock()
             return block()
@@ -28,7 +27,7 @@ open class JsonObject(initialCapacity: Int = 8) : JsonIndexable<String>, GravSer
         }
     }
 
-    protected inline fun <T> writeLocked(block: () -> T): T {
+    private inline fun <T> writeLocked(block: () -> T): T {
         try {
             lock.writeLock().lock()
             return block()
@@ -66,8 +65,13 @@ open class JsonObject(initialCapacity: Int = 8) : JsonIndexable<String>, GravSer
     override fun getDate(key: String): Date = internalGet(key)
     override fun setDate(key: String, date: Date) = internalSet(key, date)
 
-    override fun type(key: String): JsonType<*> {
-        return JsonType.of(backingMap[key])
+    override fun type(key: String): JsonType<*> = readLocked {
+        JsonType.of(backingMap[key])
+    }
+
+    override fun <R> get(key: String): R = readLocked {
+        @Suppress("UNCHECKED_CAST")
+        backingMap[key] as R
     }
 
     override fun contains(key: String): Boolean {
