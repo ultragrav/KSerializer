@@ -24,14 +24,15 @@ internal class JsonEncoder<T>(
     override fun beginStructure(descriptor: SerialDescriptor): CompositeEncoder {
         return when (descriptor.kind) {
             StructureKind.LIST -> {
-                val encoder = JsonCompositeEncoder(serializersModule, JsonArray())
-                json.setArray(key!!, encoder.json as JsonArray)
+                val arr = JsonArray()
+                val encoder = JsonCompositeEncoder(serializersModule, arr)
+                json.setArray(key!!, arr)
                 encoder
             }
 
             else -> {
                 if (key == null) {
-                    JsonCompositeEncoder(serializersModule, json as JsonObject)
+                    JsonCompositeEncoder(serializersModule, json)
                 } else {
                     val encoder = JsonCompositeEncoder(serializersModule, JsonObject())
                     json.setObject(key, encoder.json as JsonObject)
