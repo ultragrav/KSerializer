@@ -19,8 +19,8 @@ class TestArrayUpdateTracker {
         val originalList = JsonArray()
         for (i in 0..50) {
             val value = random.nextInt(100)
-            list.addNumber(value)
-            originalList.addNumber(value)
+            list.addInt(value)
+            originalList.addInt(value)
         }
 
         // Apply updates to one while tracking them in the tracker
@@ -32,13 +32,13 @@ class TestArrayUpdateTracker {
                 // Add
                 val value = random.nextInt(100)
                 val index = random.nextInt(list.size + 1)
-                list.addNumber(value, index)
+                list.addInt(value, index)
                 tracker.update(ArrayUpdateTracker.AddUpdate(index, value))
             } else if (rand < 0.66) {
                 // Set
                 val value = random.nextInt(100)
                 val index = random.nextInt(list.size)
-                list.setNumber(index, value)
+                list.setInt(index, value)
                 tracker.update(ArrayUpdateTracker.SetUpdate(index, value))
             } else {
                 // Remove

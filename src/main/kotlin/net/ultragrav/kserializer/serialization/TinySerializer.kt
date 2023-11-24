@@ -30,9 +30,8 @@ object TinySerializer {
                 serializer.writeString(data)
             }
 
-            is Number -> {
+            is Double -> {
                 serializer.writeByte(4)
-                // TODO: don't always use double?
                 serializer.writeDouble(data.toDouble())
             }
 
@@ -43,6 +42,16 @@ object TinySerializer {
                 serializer.writeByte(8)
                 serializer.writeByte(data.type.id)
                 serializer.writeByteArray(data.value)
+            }
+
+            is Int -> {
+                serializer.writeByte(9)
+                serializer.writeInt(data)
+            }
+
+            is Long -> {
+                serializer.writeByte(10)
+                serializer.writeLong(data)
             }
 
             else -> throw IllegalArgumentException("Unknown type: ${data::class.java}")
@@ -75,13 +84,8 @@ object TinySerializer {
                 return JsonValue(array, JsonType.ARRAY)
             }
 
-            3 -> {
-                return JsonValue(serializer.readString(), JsonType.STRING)
-            }
-
-            4 -> {
-                return JsonValue(serializer.readDouble(), JsonType.NUMBER)
-            }
+            3 -> return JsonValue(serializer.readString(), JsonType.STRING)
+            4 -> return JsonValue(serializer.readDouble(), JsonType.NUMBER)
 
             5 -> return JsonValue(true, JsonType.BOOLEAN)
             6 -> return JsonValue(false, JsonType.BOOLEAN)
@@ -95,6 +99,8 @@ object TinySerializer {
                 val value = serializer.readByteArray()
                 return JsonValue(BsonBinary(bsonType, value), JsonType.BINARY)
             }
+            9 -> return JsonValue(serializer.readInt(), JsonType.INT)
+            10 -> return JsonValue(serializer.readLong(), JsonType.LONG)
             else -> throw IllegalArgumentException("Unknown type: $type")
         }
     }

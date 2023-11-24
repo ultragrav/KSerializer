@@ -30,7 +30,7 @@ internal class JsonCompositeDecoder<T>(
     }
 
     override fun decodeByteElement(descriptor: SerialDescriptor, index: Int): Byte {
-        return json.getNumber(getKey(descriptor, index)).toByte()
+        return json.getInt(getKey(descriptor, index)).toByte()
     }
 
     override fun decodeCharElement(descriptor: SerialDescriptor, index: Int): Char {
@@ -38,7 +38,7 @@ internal class JsonCompositeDecoder<T>(
     }
 
     override fun decodeDoubleElement(descriptor: SerialDescriptor, index: Int): Double {
-        return json.getNumber(getKey(descriptor, index)).toDouble()
+        return json.getNumber(getKey(descriptor, index))
     }
 
     // TODO: Better way to do this?
@@ -57,11 +57,11 @@ internal class JsonCompositeDecoder<T>(
     }
 
     override fun decodeIntElement(descriptor: SerialDescriptor, index: Int): Int {
-        return json.getNumber(getKey(descriptor, index)).toInt()
+        return json.getInt(getKey(descriptor, index))
     }
 
     override fun decodeLongElement(descriptor: SerialDescriptor, index: Int): Long {
-        return json.getNumber(getKey(descriptor, index)).toLong()
+        return json.getLong(getKey(descriptor, index))
     }
 
     @ExperimentalSerializationApi
@@ -80,7 +80,7 @@ internal class JsonCompositeDecoder<T>(
     }
 
     override fun decodeShortElement(descriptor: SerialDescriptor, index: Int): Short {
-        return json.getNumber(getKey(descriptor, index)).toShort()
+        return json.getInt(getKey(descriptor, index)).toShort()
     }
 
     override fun decodeStringElement(descriptor: SerialDescriptor, index: Int): String {

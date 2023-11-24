@@ -47,7 +47,7 @@ internal class JsonEncoder<T>(
     }
 
     override fun encodeByte(value: Byte) {
-        json.setNumber(key!!, value)
+        json.setInt(key!!, value.toInt()) // TODO: Better encoding?
     }
 
     override fun encodeChar(value: Char) {
@@ -63,7 +63,7 @@ internal class JsonEncoder<T>(
     }
 
     override fun encodeFloat(value: Float) {
-        json.setNumber(key!!, value)
+        json.setNumber(key!!, value.toDouble())
     }
 
     override fun encodeInline(descriptor: SerialDescriptor): Encoder {
@@ -71,11 +71,11 @@ internal class JsonEncoder<T>(
     }
 
     override fun encodeInt(value: Int) {
-        json.setNumber(key!!, value)
+        json.setInt(key!!, value)
     }
 
     override fun encodeLong(value: Long) {
-        json.setNumber(key!!, value)
+        json.setLong(key!!, value)
     }
 
     @ExperimentalSerializationApi
@@ -83,7 +83,7 @@ internal class JsonEncoder<T>(
     }
 
     override fun encodeShort(value: Short) {
-        json.setNumber(key!!, value)
+        json.setInt(key!!, value.toInt())
     }
 
     override fun encodeString(value: String) {

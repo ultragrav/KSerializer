@@ -27,7 +27,7 @@ internal class JsonCompositeEncoder<T>(
     }
 
     override fun encodeByteElement(descriptor: SerialDescriptor, index: Int, value: Byte) {
-        json.setNumber(getKey(descriptor, index), value)
+        json.setInt(getKey(descriptor, index), value.toInt())
     }
 
     override fun encodeCharElement(descriptor: SerialDescriptor, index: Int, value: Char) {
@@ -39,7 +39,7 @@ internal class JsonCompositeEncoder<T>(
     }
 
     override fun encodeFloatElement(descriptor: SerialDescriptor, index: Int, value: Float) {
-        json.setNumber(getKey(descriptor, index), value)
+        json.setNumber(getKey(descriptor, index), value.toDouble())
     }
 
     override fun encodeInlineElement(descriptor: SerialDescriptor, index: Int): Encoder {
@@ -47,15 +47,15 @@ internal class JsonCompositeEncoder<T>(
     }
 
     override fun encodeIntElement(descriptor: SerialDescriptor, index: Int, value: Int) {
-        json.setNumber(getKey(descriptor, index), value)
+        json.setInt(getKey(descriptor, index), value)
     }
 
     override fun encodeLongElement(descriptor: SerialDescriptor, index: Int, value: Long) {
-        json.setNumber(getKey(descriptor, index), value)
+        json.setLong(getKey(descriptor, index), value)
     }
 
     override fun encodeShortElement(descriptor: SerialDescriptor, index: Int, value: Short) {
-        json.setNumber(getKey(descriptor, index), value)
+        json.setInt(getKey(descriptor, index), value.toInt())
     }
 
     override fun encodeStringElement(descriptor: SerialDescriptor, index: Int, value: String) {

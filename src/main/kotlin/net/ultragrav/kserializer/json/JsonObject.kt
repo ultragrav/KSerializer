@@ -53,8 +53,8 @@ open class JsonObject(initialCapacity: Int = 8) : JsonIndexable<String>, GravSer
     override fun getArray(key: String): JsonArray = internalGet(key)
     override fun setArray(key: String, array: JsonArray): Any? = internalSet(key, array)
 
-    override fun getNumber(key: String): Number = internalGet(key)
-    override fun setNumber(key: String, number: Number): Any? = internalSet(key, number)
+    override fun getNumber(key: String): Double = internalGet(key)
+    override fun setNumber(key: String, number: Double): Any? = internalSet(key, number)
 
     override fun getBoolean(key: String): Boolean = internalGet(key)
     override fun setBoolean(key: String, boolean: Boolean): Any? = internalSet(key, boolean)
@@ -64,6 +64,12 @@ open class JsonObject(initialCapacity: Int = 8) : JsonIndexable<String>, GravSer
 
     override fun getDate(key: String): Date = internalGet(key)
     override fun setDate(key: String, date: Date) = internalSet(key, date)
+
+    override fun getInt(key: String): Int = internalGet(key)
+    override fun setInt(key: String, int: Int): Any? = internalSet(key, int)
+
+    override fun getLong(key: String): Long = internalGet(key)
+    override fun setLong(key: String, long: Long): Any? = internalSet(key, long)
 
     override fun type(key: String): JsonType<*> = readLocked {
         JsonType.of(backingMap[key])

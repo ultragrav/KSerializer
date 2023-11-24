@@ -2,7 +2,6 @@ package net.ultragrav.kserializer.kotlinx
 
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.SerializationStrategy
-import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.serializer
 import net.ultragrav.kserializer.json.JsonObject

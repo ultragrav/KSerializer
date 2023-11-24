@@ -41,7 +41,7 @@ internal class JsonDecoder<T>(
     }
 
     override fun decodeByte(): Byte {
-        return json.getNumber(key!!).toByte()
+        return json.getInt(key!!).toByte()
     }
 
     override fun decodeChar(): Char {
@@ -49,7 +49,7 @@ internal class JsonDecoder<T>(
     }
 
     override fun decodeDouble(): Double {
-        return json.getNumber(key!!).toDouble()
+        return json.getNumber(key!!)
     }
 
     override fun decodeEnum(enumDescriptor: SerialDescriptor): Int {
@@ -65,11 +65,11 @@ internal class JsonDecoder<T>(
     }
 
     override fun decodeInt(): Int {
-        return json.getNumber(key!!).toInt()
+        return json.getInt(key!!)
     }
 
     override fun decodeLong(): Long {
-        return json.getNumber(key!!).toLong()
+        return json.getLong(key!!)
     }
 
     @ExperimentalSerializationApi
@@ -83,7 +83,7 @@ internal class JsonDecoder<T>(
     }
 
     override fun decodeShort(): Short {
-        return json.getNumber(key!!).toShort()
+        return json.getInt(key!!).toShort()
     }
 
     override fun decodeString(): String {

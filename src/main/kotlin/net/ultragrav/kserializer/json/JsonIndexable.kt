@@ -12,8 +12,8 @@ sealed interface JsonIndexable<T> {
     fun getArray(key: T): JsonArray
     fun setArray(key: T, array: JsonArray): Any?
 
-    fun getNumber(key: T): Number
-    fun setNumber(key: T, number: Number): Any?
+    fun getNumber(key: T): Double
+    fun setNumber(key: T, number: Double): Any?
 
     fun getBoolean(key: T): Boolean
     fun setBoolean(key: T, boolean: Boolean): Any?
@@ -25,6 +25,12 @@ sealed interface JsonIndexable<T> {
 
     fun getDate(key: T): Date
     fun setDate(key: T, date: Date): Any?
+
+    fun getInt(key: T): Int
+    fun setInt(key: T, int: Int): Any?
+
+    fun getLong(key: T): Long
+    fun setLong(key: T, long: Long): Any?
 
     fun type(key: T): JsonType<*>
     operator fun <R> get(key: T, type: JsonType<R>): R {

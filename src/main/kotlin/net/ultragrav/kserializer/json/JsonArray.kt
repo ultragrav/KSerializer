@@ -65,9 +65,9 @@ open class JsonArray(initialSize: Int = 8) : JsonIndexable<Int>, GravSerializabl
     override fun setArray(key: Int, array: JsonArray): Any? = internalSet(key, array)
     fun addArray(array: JsonArray, index: Int = -1) = internalAdd(array, index)
 
-    override fun getNumber(key: Int): Number = readLocked { return backingList[key] as Number }
-    override fun setNumber(key: Int, number: Number): Any? = internalSet(key, number)
-    fun addNumber(number: Number, index: Int = -1) = internalAdd(number, index)
+    override fun getNumber(key: Int): Double = readLocked { return backingList[key] as Double }
+    override fun setNumber(key: Int, number: Double): Any? = internalSet(key, number)
+    fun addNumber(number: Double, index: Int = -1) = internalAdd(number, index)
 
     override fun getBoolean(key: Int): Boolean = readLocked { return backingList[key] as Boolean }
     override fun setBoolean(key: Int, boolean: Boolean): Any? = internalSet(key, boolean)
@@ -82,6 +82,14 @@ open class JsonArray(initialSize: Int = 8) : JsonIndexable<Int>, GravSerializabl
     override fun getDate(key: Int): Date = readLocked { return backingList[key] as Date }
     override fun setDate(key: Int, date: Date): Any? = internalSet(key, date)
     fun addDate(value: Date, index: Int = -1) = internalAdd(value, index)
+
+    override fun getInt(key: Int): Int = readLocked { return backingList[key] as Int }
+    override fun setInt(key: Int, int: Int): Any? = internalSet(key, int)
+    fun addInt(value: Int, index: Int = -1) = internalAdd(value, index)
+
+    override fun getLong(key: Int): Long = readLocked { return backingList[key] as Long }
+    override fun setLong(key: Int, long: Long): Any? = internalSet(key, long)
+    fun addLong(value: Long, index: Int = -1) = internalAdd(value, index)
 
     override fun type(key: Int): JsonType<*> {
         return JsonType.of(backingList[key])

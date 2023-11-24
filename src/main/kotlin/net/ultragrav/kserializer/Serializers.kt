@@ -12,52 +12,13 @@ object Serializers {
     val JSON_OBJECT = JsonType.OBJECT
     val JSON_ARRAY = JsonType.ARRAY
     val BOOLEAN = JsonType.BOOLEAN
-
-    val INT = object : JsonDataSerializer<Int> {
-        override fun <K> serialize(data: JsonIndexable<K>, key: K, value: Int): Any? {
-            return data.setNumber(key, value)
-        }
-
-        override fun <K> deserialize(data: JsonIndexable<K>, key: K): Int {
-            return data.getNumber(key).toInt()
-        }
-
-        override fun serializeAdd(data: JsonArray, value: Int, index: Int) {
-            data.addNumber(value, index)
-        }
-    }
-
-    val LONG = object : JsonDataSerializer<Long> {
-        override fun <K> serialize(data: JsonIndexable<K>, key: K, value: Long): Any? {
-            return data.setNumber(key, value)
-        }
-
-        override fun <K> deserialize(data: JsonIndexable<K>, key: K): Long {
-            return data.getNumber(key).toLong()
-        }
-
-        override fun serializeAdd(data: JsonArray, value: Long, index: Int) {
-            data.addNumber(value, index)
-        }
-    }
-
-    val DOUBLE = object : JsonDataSerializer<Double> {
-        override fun <K> serialize(data: JsonIndexable<K>, key: K, value: Double): Any? {
-            return data.setNumber(key, value)
-        }
-
-        override fun <K> deserialize(data: JsonIndexable<K>, key: K): Double {
-            return data.getNumber(key).toDouble()
-        }
-
-        override fun serializeAdd(data: JsonArray, value: Double, index: Int) {
-            data.addNumber(value, index)
-        }
-    }
+    val INT = JsonType.INT
+    val LONG = JsonType.LONG
+    val DOUBLE = JsonType.NUMBER
 
     val FLOAT = object : JsonDataSerializer<Float> {
         override fun <K> serialize(data: JsonIndexable<K>, key: K, value: Float): Any? {
-            return data.setNumber(key, value)
+            return data.setNumber(key, value.toDouble())
         }
 
         override fun <K> deserialize(data: JsonIndexable<K>, key: K): Float {
@@ -65,7 +26,7 @@ object Serializers {
         }
 
         override fun serializeAdd(data: JsonArray, value: Float, index: Int) {
-            data.addNumber(value, index)
+            data.addNumber(value.toDouble(), index)
         }
     }
 

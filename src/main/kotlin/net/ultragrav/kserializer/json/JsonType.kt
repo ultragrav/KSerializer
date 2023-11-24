@@ -64,16 +64,16 @@ interface JsonType<T> : JsonDataSerializer<T> {
             }
         }
 
-        val NUMBER = object : JsonType<Number> {
-            override fun <I> write(indexable: JsonIndexable<I>, index: I, value: Number): Any? {
+        val NUMBER = object : JsonType<Double> {
+            override fun <I> write(indexable: JsonIndexable<I>, index: I, value: Double): Any? {
                 return indexable.setNumber(index, value)
             }
 
-            override fun <I> read(indexable: JsonIndexable<I>, index: I): Number {
+            override fun <I> read(indexable: JsonIndexable<I>, index: I): Double {
                 return indexable.getNumber(index)
             }
 
-            override fun add(array: JsonArray, value: Number, index: Int) {
+            override fun add(array: JsonArray, value: Double, index: Int) {
                 array.addNumber(value, index)
             }
         }
@@ -138,6 +138,34 @@ interface JsonType<T> : JsonDataSerializer<T> {
             }
         }
 
+        val INT = object : JsonType<Int> {
+            override fun <I> write(indexable: JsonIndexable<I>, index: I, value: Int): Any? {
+                return indexable.setInt(index, value)
+            }
+
+            override fun <I> read(indexable: JsonIndexable<I>, index: I): Int {
+                return indexable.getInt(index)
+            }
+
+            override fun add(array: JsonArray, value: Int, index: Int) {
+                array.addInt(value, index)
+            }
+        }
+
+        val LONG = object : JsonType<Long> {
+            override fun <I> write(indexable: JsonIndexable<I>, index: I, value: Long): Any? {
+                return indexable.setLong(index, value)
+            }
+
+            override fun <I> read(indexable: JsonIndexable<I>, index: I): Long {
+                return indexable.getLong(index)
+            }
+
+            override fun add(array: JsonArray, value: Long, index: Int) {
+                array.addLong(value, index)
+            }
+        }
+
         val UUID = object : JsonType<UUID> {
             override fun <I> write(indexable: JsonIndexable<I>, index: I, value: UUID): Any? {
                 return indexable.setBinary(index, BsonBinary(BsonBinaryType.UUID, value.toBytes()))
@@ -163,7 +191,7 @@ interface JsonType<T> : JsonDataSerializer<T> {
                 is String -> STRING
                 is JsonObject -> OBJECT
                 is JsonArray -> ARRAY
-                is Number -> NUMBER
+                is Double -> NUMBER
                 is Boolean -> BOOLEAN
                 is BsonBinary -> BINARY
                 is ByteArray -> GENERIC_BINARY

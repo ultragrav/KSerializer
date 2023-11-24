@@ -120,7 +120,7 @@ class JsonReader(val reader: Reader) {
         }
     }
 
-    private fun readNumber(current: Char): Double {
+    private fun readNumber(current: Char): Number {
         val builder = java.lang.StringBuilder()
 
         var ch = current
@@ -134,11 +134,11 @@ class JsonReader(val reader: Reader) {
 
         val str = builder.toString()
         try {
-            return str.toInt().toDouble()
+            return str.toInt()
         } catch (ignored: NumberFormatException) {
         }
         try {
-            return str.toLong().toDouble()
+            return str.toLong()
         } catch (ignored: NumberFormatException) {
         }
         return try {
