@@ -196,6 +196,9 @@ interface JsonType<T> : JsonDataSerializer<T> {
                 is BsonBinary -> BINARY
                 is ByteArray -> GENERIC_BINARY
                 is Date -> DATE
+                is Int -> INT
+                is Long -> LONG
+                is UUID -> UUID
                 else -> throw IllegalArgumentException("Unknown type: $value")
             } as JsonType<T>
         }
