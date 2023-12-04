@@ -21,12 +21,18 @@ internal class JsonEncoder<T>(
     val json: JsonIndexable<T>,
     val key: T? = null
 ) : Encoder {
+    private var first = true
+    private fun getKeyOrDefault(): T {
+        if (key == null && !first) throw IllegalStateException("Cannot encode multiple values to default key")
+        return key ?: json.defaultKey
+    }
+
     override fun beginStructure(descriptor: SerialDescriptor): CompositeEncoder {
         return when (descriptor.kind) {
             StructureKind.LIST -> {
-                val arr = JsonArray()
+                val arr = JsonArray(descriptor.elementsCount)
                 val encoder = JsonCompositeEncoder(serializersModule, arr)
-                json.setArray(key!!, arr)
+                json.setArray(getKeyOrDefault(), arr)
                 encoder
             }
 
@@ -43,27 +49,27 @@ internal class JsonEncoder<T>(
     }
 
     override fun encodeBoolean(value: Boolean) {
-        json.setBoolean(key!!, value)
+        json.setBoolean(getKeyOrDefault(), value)
     }
 
     override fun encodeByte(value: Byte) {
-        json.setInt(key!!, value.toInt()) // TODO: Better encoding?
+        json.setInt(getKeyOrDefault(), value.toInt()) // TODO: Better encoding?
     }
 
     override fun encodeChar(value: Char) {
-        json.setString(key!!, value.toString())
+        json.setString(getKeyOrDefault(), value.toString())
     }
 
     override fun encodeDouble(value: Double) {
-        json.setNumber(key!!, value)
+        json.setNumber(getKeyOrDefault(), value)
     }
 
     override fun encodeEnum(enumDescriptor: SerialDescriptor, index: Int) {
-        json.setString(key!!, enumDescriptor.getElementName(index))
+        json.setString(getKeyOrDefault(), enumDescriptor.getElementName(index))
     }
 
     override fun encodeFloat(value: Float) {
-        json.setNumber(key!!, value.toDouble())
+        json.setNumber(getKeyOrDefault(), value.toDouble())
     }
 
     override fun encodeInline(descriptor: SerialDescriptor): Encoder {
@@ -71,11 +77,11 @@ internal class JsonEncoder<T>(
     }
 
     override fun encodeInt(value: Int) {
-        json.setInt(key!!, value)
+        json.setInt(getKeyOrDefault(), value)
     }
 
     override fun encodeLong(value: Long) {
-        json.setLong(key!!, value)
+        json.setLong(getKeyOrDefault(), value)
     }
 
     @ExperimentalSerializationApi
@@ -83,23 +89,23 @@ internal class JsonEncoder<T>(
     }
 
     override fun encodeShort(value: Short) {
-        json.setInt(key!!, value.toInt())
+        json.setInt(getKeyOrDefault(), value.toInt())
     }
 
     override fun encodeString(value: String) {
-        json.setString(key!!, value)
+        json.setString(getKeyOrDefault(), value)
     }
 
     private fun encodeByteArray(value: ByteArray) {
-        json.setBinary(key!!, value)
+        json.setBinary(getKeyOrDefault(), value)
     }
 
     fun encodeDate(value: Date) {
-        json.setDate(key!!, value)
+        json.setDate(getKeyOrDefault(), value)
     }
 
     fun encodeUUID(value: UUID) {
-        json.setBinary(key!!, BsonBinaryType.UUID, value.toBytes())
+        json.setBinary(getKeyOrDefault(), BsonBinaryType.UUID, value.toBytes())
     }
 
     override fun <T> encodeSerializableValue(serializer: SerializationStrategy<T>, value: T) {

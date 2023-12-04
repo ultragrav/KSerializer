@@ -58,4 +58,6 @@ sealed interface JsonIndexable<T> {
 
     val size: Int
     val keys: Iterable<T>
+
+    val defaultKey: T
 }

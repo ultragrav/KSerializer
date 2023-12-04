@@ -159,6 +159,8 @@ open class JsonArray(initialSize: Int = 8) : JsonIndexable<Int>, GravSerializabl
         }
     }
 
+    override val defaultKey = 0
+
     override fun toString(): String {
         // Convert to JSON string
         val builder = StringBuilder()

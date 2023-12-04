@@ -26,21 +26,21 @@ fun UUID.toBytes(): ByteArray {
 }
 
 fun ByteArray.toUUID(): UUID {
-    val msb = (this[0].toLong() shl 56) or
-            (this[1].toLong() shl 48) or
-            (this[2].toLong() shl 40) or
-            (this[3].toLong() shl 32) or
-            (this[4].toLong() shl 24) or
-            (this[5].toLong() shl 16) or
-            (this[6].toLong() shl 8) or
-            this[7].toLong()
-    val lsb = (this[8].toLong() shl 56) or
-            (this[9].toLong() shl 48) or
-            (this[10].toLong() shl 40) or
-            (this[11].toLong() shl 32) or
-            (this[12].toLong() shl 24) or
-            (this[13].toLong() shl 16) or
-            (this[14].toLong() shl 8) or
-            this[15].toLong()
+    val msb = (this[0].toUByte().toLong() shl 56) or
+            (this[1].toUByte().toLong() shl 48) or
+            (this[2].toUByte().toLong() shl 40) or
+            (this[3].toUByte().toLong() shl 32) or
+            (this[4].toUByte().toLong() shl 24) or
+            (this[5].toUByte().toLong() shl 16) or
+            (this[6].toUByte().toLong() shl 8) or
+            this[7].toUByte().toLong()
+    val lsb = (this[8].toUByte().toLong() shl 56) or
+            (this[9].toUByte().toLong() shl 48) or
+            (this[10].toUByte().toLong() shl 40) or
+            (this[11].toUByte().toLong() shl 32) or
+            (this[12].toUByte().toLong() shl 24) or
+            (this[13].toUByte().toLong() shl 16) or
+            (this[14].toUByte().toLong() shl 8) or
+            this[15].toUByte().toLong()
     return UUID(msb, lsb)
 }

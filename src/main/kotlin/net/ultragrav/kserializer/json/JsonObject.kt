@@ -104,6 +104,8 @@ open class JsonObject(initialCapacity: Int = 8) : JsonIndexable<String>, GravSer
         }
     }
 
+    override val defaultKey = "v"
+
     override fun toString(): String {
         // Convert to JSON string
         val builder = StringBuilder()
@@ -121,7 +123,7 @@ open class JsonObject(initialCapacity: Int = 8) : JsonIndexable<String>, GravSer
                 is JsonArray -> builder.append(value.toString())
                 is Number -> builder.append(value.toString())
                 is Boolean -> builder.append(value.toString())
-                is ByteArray -> builder.append(String(value)) // TODO: Better display
+                is BsonBinary -> builder.append(value.toString())
                 else -> throw IllegalArgumentException("Invalid value type: ${value::class.java}")
             }
         }

@@ -20,10 +20,14 @@ internal class JsonDecoder<T>(
     val json: JsonIndexable<T>,
     val key: T? = null
 ) : Decoder {
+    private fun getKeyOrDefault(): T {
+        return key ?: json.defaultKey
+    }
+    
     override fun beginStructure(descriptor: SerialDescriptor): CompositeDecoder {
         return when (descriptor.kind) {
             StructureKind.LIST -> {
-                JsonCompositeDecoder(serializersModule, json.getArray(key!!))
+                JsonCompositeDecoder(serializersModule, json.getArray(getKeyOrDefault()))
             }
 
             else -> {
@@ -37,27 +41,27 @@ internal class JsonDecoder<T>(
     }
 
     override fun decodeBoolean(): Boolean {
-        return json.getBoolean(key!!)
+        return json.getBoolean(getKeyOrDefault())
     }
 
     override fun decodeByte(): Byte {
-        return json.getInt(key!!).toByte()
+        return json.getInt(getKeyOrDefault()).toByte()
     }
 
     override fun decodeChar(): Char {
-        return json.getString(key!!)[0]
+        return json.getString(getKeyOrDefault())[0]
     }
 
     override fun decodeDouble(): Double {
-        return json.getNumber(key!!)
+        return json.getNumber(getKeyOrDefault())
     }
 
     override fun decodeEnum(enumDescriptor: SerialDescriptor): Int {
-        return enumDescriptor.getElementIndex(json.getString(key!!))
+        return enumDescriptor.getElementIndex(json.getString(getKeyOrDefault()))
     }
 
     override fun decodeFloat(): Float {
-        return json.getNumber(key!!).toFloat()
+        return json.getNumber(getKeyOrDefault()).toFloat()
     }
 
     override fun decodeInline(descriptor: SerialDescriptor): Decoder {
@@ -65,11 +69,11 @@ internal class JsonDecoder<T>(
     }
 
     override fun decodeInt(): Int {
-        return json.getInt(key!!)
+        return json.getInt(getKeyOrDefault())
     }
 
     override fun decodeLong(): Long {
-        return json.getLong(key!!)
+        return json.getLong(getKeyOrDefault())
     }
 
     @ExperimentalSerializationApi
@@ -83,23 +87,23 @@ internal class JsonDecoder<T>(
     }
 
     override fun decodeShort(): Short {
-        return json.getInt(key!!).toShort()
+        return json.getInt(getKeyOrDefault()).toShort()
     }
 
     override fun decodeString(): String {
-        return json.getString(key!!)
+        return json.getString(getKeyOrDefault())
     }
 
     private fun decodeByteArray(): ByteArray {
-        return json.getBinary(key!!).value
+        return json.getBinary(getKeyOrDefault()).value
     }
 
     fun decodeDate(): Date {
-        return json.getDate(key!!)
+        return json.getDate(getKeyOrDefault())
     }
 
     fun decodeUUID(): UUID {
-        val binary = json.getBinary(key!!)
+        val binary = json.getBinary(getKeyOrDefault())
         if (binary.type != BsonBinaryType.UUID)
             throw IllegalArgumentException("Expected UUID, got ${binary.type}")
         return binary.value.toUUID()
