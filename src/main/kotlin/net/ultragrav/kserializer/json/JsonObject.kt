@@ -104,7 +104,7 @@ open class JsonObject(initialCapacity: Int = 8) : JsonIndexable<String>, GravSer
         }
     }
 
-    override val defaultKey = "v"
+    override val defaultKey = "value"
 
     override fun toString(): String {
         // Convert to JSON string
