@@ -8,6 +8,7 @@ import kotlinx.serialization.descriptors.StructureKind
 import kotlinx.serialization.encoding.CompositeEncoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.serializer
 import net.ultragrav.kserializer.json.BsonBinaryType
 import net.ultragrav.kserializer.json.JsonArray
 import net.ultragrav.kserializer.json.JsonIndexable
@@ -111,6 +112,14 @@ internal class JsonEncoder<T>(
     override fun <T> encodeSerializableValue(serializer: SerializationStrategy<T>, value: T) {
         if (serializer == ByteArraySerializer()) {
             encodeByteArray(value as ByteArray)
+            return
+        }
+        if (serializer == serializer<JsonObject>()) {
+            json.setObject(getKeyOrDefault(), (value as JsonObject).copy())
+            return
+        }
+        if (serializer == serializer<JsonArray>()) {
+            json.setArray(getKeyOrDefault(), (value as JsonArray).copy())
             return
         }
         super.encodeSerializableValue(serializer, value)

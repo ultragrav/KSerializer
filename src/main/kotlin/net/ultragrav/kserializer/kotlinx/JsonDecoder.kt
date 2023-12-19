@@ -8,7 +8,9 @@ import kotlinx.serialization.descriptors.StructureKind
 import kotlinx.serialization.encoding.CompositeDecoder
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.serializer
 import net.ultragrav.kserializer.json.BsonBinaryType
+import net.ultragrav.kserializer.json.JsonArray
 import net.ultragrav.kserializer.json.JsonIndexable
 import net.ultragrav.kserializer.json.JsonObject
 import net.ultragrav.kserializer.util.toUUID
@@ -113,6 +115,12 @@ internal class JsonDecoder<T>(
     override fun <T> decodeSerializableValue(deserializer: DeserializationStrategy<T>): T {
         if (deserializer == ByteArraySerializer()) {
             return decodeByteArray() as T
+        }
+        if (deserializer == serializer<JsonObject>()) {
+            return json.getObject(getKeyOrDefault()).copy() as T
+        }
+        if (deserializer == serializer<JsonArray>()) {
+            return json.getArray(getKeyOrDefault()).copy() as T
         }
         return super.decodeSerializableValue(deserializer)
     }

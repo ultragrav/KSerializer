@@ -7,6 +7,7 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.CompositeEncoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.serializer
 import net.ultragrav.kserializer.json.JsonArray
 import net.ultragrav.kserializer.json.JsonIndexable
 import net.ultragrav.kserializer.json.JsonObject
@@ -87,6 +88,14 @@ internal class JsonCompositeEncoder<T>(
     ) {
         if (serializer == ByteArraySerializer()) {
             encodeByteArrayElement(descriptor, index, value as ByteArray)
+            return
+        }
+        if (serializer == serializer<JsonObject>()) {
+            json.setObject(getKey(descriptor, index), (value as JsonObject).copy())
+            return
+        }
+        if (serializer == serializer<JsonArray>()) {
+            json.setArray(getKey(descriptor, index), (value as JsonArray).copy())
             return
         }
         val encoder = JsonEncoder(serializersModule, json, getKey(descriptor, index))
