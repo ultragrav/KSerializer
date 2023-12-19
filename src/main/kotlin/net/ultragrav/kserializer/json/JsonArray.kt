@@ -1,14 +1,17 @@
 package net.ultragrav.kserializer.json
 
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import net.ultragrav.kserializer.serialization.TinySerializer
 import net.ultragrav.kserializer.updates.ArrayUpdateTracker
 import net.ultragrav.serializer.GravSerializable
 import net.ultragrav.serializer.GravSerializer
 import java.util.*
 import java.util.concurrent.locks.ReentrantReadWriteLock
-import kotlin.collections.ArrayList
 
-open class JsonArray(initialSize: Int = 8) : JsonIndexable<Int>, GravSerializable {
+@Serializable
+class JsonArray : JsonIndexable<Int>, GravSerializable {
     var trackingUpdates = false
         set(value) {
             if (value) {
@@ -21,11 +24,19 @@ open class JsonArray(initialSize: Int = 8) : JsonIndexable<Int>, GravSerializabl
             field = value
         }
 
-    internal var backingList: MutableList<Any?> = ArrayList(initialSize)
+    internal var backingList: MutableList<@Contextual Any?>
 
+    @Transient
     internal var updateTracker: ArrayUpdateTracker? = null
 
+    @Transient
     private val lock: ReentrantReadWriteLock = ReentrantReadWriteLock()
+
+    constructor() : this(8)
+    constructor(intialSize: Int) {
+        backingList = ArrayList(intialSize)
+    }
+
     private inline fun <T> readLocked(block: () -> T): T {
         try {
             lock.readLock().lock()
@@ -103,6 +114,16 @@ open class JsonArray(initialSize: Int = 8) : JsonIndexable<Int>, GravSerializabl
     fun add(value: Any?, index: Int = -1) = JsonType.of(value)
         .write(this, if (index == -1) size else index, value)
 
+    override fun copy(): JsonArray = readLocked {
+        val copy = JsonArray()
+        backingList.forEach {
+            copy.backingList.add(
+                if (it is JsonIndexable<*>) it.copy() else it
+            )
+        }
+        return copy
+    }
+
     override fun remove(key: Int) = writeLocked {
         backingList.removeAt(key)
         if (trackingUpdates) {
@@ -128,7 +149,7 @@ open class JsonArray(initialSize: Int = 8) : JsonIndexable<Int>, GravSerializabl
         if (trackingUpdates) {
             updateTracker!!.setUpdate(key, value)
         }
-        backingList[key] = value
+        return@writeLocked backingList.set(key, value)
     }
 
     internal fun internalAdd(value: Any?, index: Int = -1) = writeLocked {

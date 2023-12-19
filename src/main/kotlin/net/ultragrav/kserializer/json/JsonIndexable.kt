@@ -51,6 +51,8 @@ sealed interface JsonIndexable<T> {
         }
     }
 
+    fun copy(): JsonIndexable<T>
+
     fun remove(key: T): Any?
     fun clear()
 

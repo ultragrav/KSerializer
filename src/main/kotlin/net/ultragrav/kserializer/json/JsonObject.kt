@@ -1,21 +1,27 @@
 package net.ultragrav.kserializer.json
 
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import net.ultragrav.kserializer.serialization.TinySerializer
 import net.ultragrav.serializer.GravSerializable
 import net.ultragrav.serializer.GravSerializer
 import java.util.*
 import java.util.concurrent.locks.ReentrantReadWriteLock
 
-open class JsonObject(initialCapacity: Int = 8) : JsonIndexable<String>, GravSerializable {
-    private val backingMap = LinkedHashMap<String, Any>(initialCapacity)
+@Serializable
+class JsonObject : JsonIndexable<String>, GravSerializable {
+    private val backingMap: LinkedHashMap<String, @Contextual Any>
 
     override val size get() = readLocked { backingMap.size }
     override val keys get() = readLocked { backingMap.keys }
 
-    protected val lock: ReentrantReadWriteLock = ReentrantReadWriteLock()
+    @Transient
+    private val lock: ReentrantReadWriteLock = ReentrantReadWriteLock()
 
-    open fun createObject(): JsonObject {
-        return JsonObject()
+    constructor() : this(8)
+    constructor(initialCapacity: Int) {
+        backingMap = LinkedHashMap(initialCapacity)
     }
 
     private inline fun <T> readLocked(block: () -> T): T {
@@ -36,10 +42,10 @@ open class JsonObject(initialCapacity: Int = 8) : JsonIndexable<String>, GravSer
         }
     }
 
-    protected open fun <T : Any> internalSet(key: String, obj: T): Any? =
+    private fun <T : Any> internalSet(key: String, obj: T): Any? =
         writeLocked { return backingMap.put(key, obj) }
 
-    protected open fun <T : Any> internalGet(key: String): T {
+    private fun <T : Any> internalGet(key: String): T {
         @Suppress("UNCHECKED_CAST")
         return readLocked { backingMap[key] as T }
     }
@@ -84,22 +90,30 @@ open class JsonObject(initialCapacity: Int = 8) : JsonIndexable<String>, GravSer
         return backingMap.containsKey(key)
     }
 
+    override fun copy(): JsonObject = readLocked {
+        val copy = JsonObject(backingMap.size)
+        backingMap.forEach { (key, value) ->
+            copy.backingMap[key] = if (value is JsonIndexable<*>) value.copy() else value
+        }
+        return copy
+    }
+
     override fun remove(key: String): Any? = writeLocked { backingMap.remove(key) }
 
     override fun clear() = writeLocked { backingMap.clear() }
 
-    fun asMap(): Map<String, Any?> = backingMap.mapValues {
-        when (it) {
+    fun asMap(): Map<String, Any?> = backingMap.mapValues { (_, value) ->
+        when (value) {
             is JsonArray -> {
-                it.asList()
+                value.asList()
             }
 
             is JsonObject -> {
-                it.asMap()
+                value.asMap()
             }
 
             else -> {
-                it
+                value
             }
         }
     }
