@@ -1,6 +1,6 @@
 package net.ultragrav.kserializer.json
 
-import java.util.Date
+import java.util.*
 
 sealed interface JsonIndexable<T> {
     fun getString(key: T): String
@@ -62,4 +62,9 @@ sealed interface JsonIndexable<T> {
     val keys: Iterable<T>
 
     val defaultKey: T
+
+
+    // Binary types
+    fun getUUID(key: T): UUID = get(key, JsonType.UUID)
+    fun setUUID(key: T, uuid: UUID): Any? = set(key, JsonType.UUID, uuid)
 }
