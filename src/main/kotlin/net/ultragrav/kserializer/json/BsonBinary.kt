@@ -1,5 +1,8 @@
 package net.ultragrav.kserializer.json
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class BsonBinary(val type: BsonBinaryType, val value: ByteArray) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
