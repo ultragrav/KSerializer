@@ -41,7 +41,7 @@ abstract class Wrapper(val data: JsonObject) {
     }
 
     protected fun jsonObject(
-        initial: JsonObject = data.createObject(),
+        initial: JsonObject = JsonObject(),
         key: String? = null
     ): SerializerDelegate<JsonObject> {
         return serializer(JsonType.OBJECT, initial, key)

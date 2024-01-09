@@ -10,7 +10,7 @@ class WrapperDelegate<T : Wrapper>(private val wrapperFactory: (JsonObject) -> T
     operator fun getValue(wrapper: Wrapper, property: KProperty<*>): T {
         val k = key ?: property.name
         if (!wrapper.data.contains(k))
-            wrapper.data.setObject(k, wrapper.data.createObject())
+            wrapper.data.setObject(k, JsonObject())
 
         if (!::cachedWrapper.isInitialized) {
             cachedWrapper = wrapperFactory(wrapper.data.getObject(k))

@@ -80,7 +80,7 @@ internal class JsonDecoder<T>(
 
     @ExperimentalSerializationApi
     override fun decodeNotNullMark(): Boolean {
-        return true
+        return json.contains(getKeyOrDefault())
     }
 
     @ExperimentalSerializationApi
