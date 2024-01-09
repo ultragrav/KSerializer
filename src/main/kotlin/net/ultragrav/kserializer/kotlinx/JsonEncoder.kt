@@ -30,11 +30,11 @@ internal class JsonEncoder<T>(
 
     override fun beginStructure(descriptor: SerialDescriptor): CompositeEncoder {
         return when (descriptor.kind) {
-            StructureKind.LIST -> {
-                val arr = JsonArray(descriptor.elementsCount)
+            StructureKind.LIST, StructureKind.MAP -> {
+                val arr = JsonArray()
                 val encoder = JsonCompositeEncoder(serializersModule, arr)
                 json.setArray(getKeyOrDefault(), arr)
-                encoder
+                return encoder
             }
 
             else -> {
@@ -47,6 +47,13 @@ internal class JsonEncoder<T>(
                 }
             }
         }
+    }
+
+    override fun beginCollection(descriptor: SerialDescriptor, collectionSize: Int): CompositeEncoder {
+        val arr = JsonArray(descriptor.elementsCount * collectionSize)
+        val encoder = JsonCompositeEncoder(serializersModule, arr)
+        json.setArray(getKeyOrDefault(), arr)
+        return encoder
     }
 
     override fun encodeBoolean(value: Boolean) {

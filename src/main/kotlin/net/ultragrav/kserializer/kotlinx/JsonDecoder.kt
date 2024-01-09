@@ -28,7 +28,7 @@ internal class JsonDecoder<T>(
     
     override fun beginStructure(descriptor: SerialDescriptor): CompositeDecoder {
         return when (descriptor.kind) {
-            StructureKind.LIST -> {
+            StructureKind.LIST, StructureKind.MAP -> {
                 JsonCompositeDecoder(serializersModule, json.getArray(getKeyOrDefault()))
             }
 

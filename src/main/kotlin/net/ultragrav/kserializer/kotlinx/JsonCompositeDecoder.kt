@@ -118,6 +118,6 @@ internal class JsonCompositeDecoder<T>(
     }
 
     override fun decodeCollectionSize(descriptor: SerialDescriptor): Int {
-        return json.size
+        return json.size / descriptor.elementsCount
     }
 }

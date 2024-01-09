@@ -194,6 +194,7 @@ class JsonArray : JsonIndexable<Int>, GravSerializable {
                 is JsonArray -> builder.append(value.toString())
                 is Number -> builder.append(value.toString())
                 is Boolean -> builder.append(value.toString())
+                is BsonBinary -> builder.append(value.toString())
                 else -> throw IllegalArgumentException("Invalid value type: ${value::class.java}")
             }
             if (i != size - 1) {
