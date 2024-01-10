@@ -25,6 +25,7 @@ internal class JsonEncoder<T>(
     private var first = true
     private fun getKeyOrDefault(): T {
         if (key == null && !first) throw IllegalStateException("Cannot encode multiple values to default key")
+        first = false
         return key ?: json.defaultKey
     }
 

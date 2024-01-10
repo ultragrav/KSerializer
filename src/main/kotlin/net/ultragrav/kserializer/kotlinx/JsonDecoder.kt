@@ -80,7 +80,10 @@ internal class JsonDecoder<T>(
 
     @ExperimentalSerializationApi
     override fun decodeNotNullMark(): Boolean {
-        return json.contains(getKeyOrDefault())
+        // The 2nd part of this is because structure encoding will just encode into the
+        // current object, and so when decoding a structure after this check, it will only be null if
+        // the object is empty.
+        return json.contains(getKeyOrDefault()) || (key == null && json.size > 0)
     }
 
     @ExperimentalSerializationApi
