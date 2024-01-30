@@ -10,7 +10,6 @@ import net.ultragrav.serializer.GravSerializer
 import java.util.*
 import java.util.concurrent.locks.ReentrantReadWriteLock
 
-@Serializable
 class JsonArray : JsonIndexable<Int>, GravSerializable {
     var trackingUpdates = false
         set(value) {
@@ -24,7 +23,7 @@ class JsonArray : JsonIndexable<Int>, GravSerializable {
             field = value
         }
 
-    internal var backingList: MutableList<@Contextual Any?>
+    internal var backingList: MutableList<Any?>
 
     @Transient
     internal var updateTracker: ArrayUpdateTracker? = null

@@ -9,9 +9,8 @@ import net.ultragrav.serializer.GravSerializer
 import java.util.*
 import java.util.concurrent.locks.ReentrantReadWriteLock
 
-@Serializable
 class JsonObject : JsonIndexable<String>, GravSerializable {
-    private val backingMap: LinkedHashMap<String, @Contextual Any>
+    private val backingMap: LinkedHashMap<String, Any>
 
     override val size get() = readLocked { backingMap.size }
     override val keys get() = readLocked { backingMap.keys }
