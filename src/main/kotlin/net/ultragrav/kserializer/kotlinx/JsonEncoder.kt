@@ -122,14 +122,14 @@ internal class JsonEncoder<T>(
             encodeByteArray(value as ByteArray)
             return
         }
-        if (serializer == serializer<JsonObject>()) {
-            json.setObject(getKeyOrDefault(), (value as JsonObject).copy())
-            return
-        }
-        if (serializer == serializer<JsonArray>()) {
-            json.setArray(getKeyOrDefault(), (value as JsonArray).copy())
-            return
-        }
+//        if (serializer == serializer<JsonObject>()) {
+//            json.setObject(getKeyOrDefault(), (value as JsonObject).copy())
+//            return
+//        }
+//        if (serializer == serializer<JsonArray>()) {
+//            json.setArray(getKeyOrDefault(), (value as JsonArray).copy())
+//            return
+//        }
         super.encodeSerializableValue(serializer, value)
     }
 }

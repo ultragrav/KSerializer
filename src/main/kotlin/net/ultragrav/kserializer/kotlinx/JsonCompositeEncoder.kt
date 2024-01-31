@@ -90,14 +90,14 @@ internal class JsonCompositeEncoder<T>(
             encodeByteArrayElement(descriptor, index, value as ByteArray)
             return
         }
-        if (serializer == serializer<JsonObject>()) {
-            json.setObject(getKey(descriptor, index), (value as JsonObject).copy())
-            return
-        }
-        if (serializer == serializer<JsonArray>()) {
-            json.setArray(getKey(descriptor, index), (value as JsonArray).copy())
-            return
-        }
+//        if (serializer == serializer<JsonObject>()) {
+//            json.setObject(getKey(descriptor, index), (value as JsonObject).copy())
+//            return
+//        }
+//        if (serializer == serializer<JsonArray>()) {
+//            json.setArray(getKey(descriptor, index), (value as JsonArray).copy())
+//            return
+//        }
         val encoder = JsonEncoder(serializersModule, json, getKey(descriptor, index))
         serializer.serialize(encoder, value)
     }

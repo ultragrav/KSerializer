@@ -119,12 +119,12 @@ internal class JsonDecoder<T>(
         if (deserializer == ByteArraySerializer()) {
             return decodeByteArray() as T
         }
-        if (deserializer == serializer<JsonObject>()) {
-            return json.getObject(getKeyOrDefault()).copy() as T
-        }
-        if (deserializer == serializer<JsonArray>()) {
-            return json.getArray(getKeyOrDefault()).copy() as T
-        }
+//        if (deserializer == serializer<JsonObject>()) {
+//            return json.getObject(getKeyOrDefault()).copy() as T
+//        }
+//        if (deserializer == serializer<JsonArray>()) {
+//            return json.getArray(getKeyOrDefault()).copy() as T
+//        }
         return super.decodeSerializableValue(deserializer)
     }
 }

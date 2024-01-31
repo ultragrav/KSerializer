@@ -107,12 +107,12 @@ internal class JsonCompositeDecoder<T>(
         if (deserializer == ByteArraySerializer()) {
             return decodeByteArrayElement(descriptor, index) as T
         }
-        if (deserializer == serializer<JsonObject>()) {
-            return json.getObject(getKey(descriptor, index)).copy() as T
-        }
-        if (deserializer == serializer<JsonArray>()) {
-            return json.getArray(getKey(descriptor, index)).copy() as T
-        }
+//        if (deserializer == serializer<JsonObject>()) {
+//            return json.getObject(getKey(descriptor, index)).copy() as T
+//        }
+//        if (deserializer == serializer<JsonArray>()) {
+//            return json.getArray(getKey(descriptor, index)).copy() as T
+//        }
         val decoder = JsonDecoder(serializersModule, json, getKey(descriptor, index))
         return decoder.decodeSerializableValue(deserializer)
     }
