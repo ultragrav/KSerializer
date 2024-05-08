@@ -70,7 +70,11 @@ class JsonReader(val reader: Reader) {
                         }
                         builder.append(hex.toString().toInt(16).toChar())
                     }
+                    else -> {
+                        throw IllegalStateException("Invalid escape character: '$ch'")
+                    }
                 }
+                escaped = false
             } else if (ch == '\\') {
                 escaped = true
             } else if (ch == '"') {
@@ -85,9 +89,7 @@ class JsonReader(val reader: Reader) {
         val obj = JsonObject()
 
         while (true) {
-            val ch = nextNWSP()
-
-            when (ch) {
+            when (val ch = nextNWSP()) {
                 '}' -> return obj
                 '"' -> {
                     val key = readString()
@@ -108,11 +110,10 @@ class JsonReader(val reader: Reader) {
         val array = JsonArray()
 
         while (true) {
-            read()
+            val el = read()
+            array.add(el)
 
-            val ch = nextNWSP()
-
-            when (ch) {
+            when (val ch = nextNWSP()) {
                 ']' -> return array
                 ',' -> continue
                 else -> throw IllegalStateException("Expected ',' or ']' but got '$ch'")
