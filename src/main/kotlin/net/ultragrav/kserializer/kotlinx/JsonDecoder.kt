@@ -43,26 +43,38 @@ internal class JsonDecoder<T>(
     }
 
     override fun decodeBoolean(): Boolean {
-        return json.getBoolean(getKeyOrDefault())
+        val key = getKeyOrDefault()
+        if (key !in json) error("$key is not a key in ${json.keys}")
+        return json.getBoolean(key)
     }
 
     override fun decodeByte(): Byte {
-        return json.getInt(getKeyOrDefault()).toByte()
+        val key = getKeyOrDefault()
+        if (key !in json) error("$key is not a key in ${json.keys}")
+        return json.getInt(key).toByte()
     }
 
     override fun decodeChar(): Char {
+        val key = getKeyOrDefault()
+        if (key !in json) error("$key is not a key in ${json.keys}")
         return json.getString(getKeyOrDefault())[0]
     }
 
     override fun decodeDouble(): Double {
+        val key = getKeyOrDefault()
+        if (key !in json) error("$key is not a key in ${json.keys}")
         return json.getNumber(getKeyOrDefault())
     }
 
     override fun decodeEnum(enumDescriptor: SerialDescriptor): Int {
+        val key = getKeyOrDefault()
+        if (key !in json) error("$key is not a key in ${json.keys}")
         return enumDescriptor.getElementIndex(json.getString(getKeyOrDefault()))
     }
 
     override fun decodeFloat(): Float {
+        val key = getKeyOrDefault()
+        if (key !in json) error("$key is not a key in ${json.keys}")
         return json.getNumber(getKeyOrDefault()).toFloat()
     }
 
@@ -71,10 +83,14 @@ internal class JsonDecoder<T>(
     }
 
     override fun decodeInt(): Int {
+        val key = getKeyOrDefault()
+        if (key !in json) error("$key is not a key in ${json.keys}")
         return json.getInt(getKeyOrDefault())
     }
 
     override fun decodeLong(): Long {
+        val key = getKeyOrDefault()
+        if (key !in json) error("$key is not a key in ${json.keys}")
         return json.getLong(getKeyOrDefault())
     }
 

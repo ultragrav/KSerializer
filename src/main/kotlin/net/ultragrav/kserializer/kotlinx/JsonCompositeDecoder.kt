@@ -27,19 +27,27 @@ internal class JsonCompositeDecoder<T>(
     override fun decodeSequentially(): Boolean = true
 
     override fun decodeBooleanElement(descriptor: SerialDescriptor, index: Int): Boolean {
-        return json.getBoolean(getKey(descriptor, index))
+        val key = getKey(descriptor, index)
+        if (key !in json) error("$key is not a key in ${json.keys}")
+        return json.getBoolean(key)
     }
 
     override fun decodeByteElement(descriptor: SerialDescriptor, index: Int): Byte {
-        return json.getInt(getKey(descriptor, index)).toByte()
+        val key = getKey(descriptor, index)
+        if (key !in json) error("$key is not a key in ${json.keys}")
+        return json.getInt(key).toByte()
     }
 
     override fun decodeCharElement(descriptor: SerialDescriptor, index: Int): Char {
-        return json.getString(getKey(descriptor, index))[0]
+        val key = getKey(descriptor, index)
+        if (key !in json) error("$key is not a key in ${json.keys}")
+        return json.getString(key)[0]
     }
 
     override fun decodeDoubleElement(descriptor: SerialDescriptor, index: Int): Double {
-        return json.getNumber(getKey(descriptor, index))
+        val key = getKey(descriptor, index)
+        if (key !in json) error("$key is not a key in ${json.keys}")
+        return json.getNumber(key)
     }
 
     // TODO: Better way to do this?
@@ -50,7 +58,9 @@ internal class JsonCompositeDecoder<T>(
     }
 
     override fun decodeFloatElement(descriptor: SerialDescriptor, index: Int): Float {
-        return json.getNumber(getKey(descriptor, index)).toFloat()
+        val key = getKey(descriptor, index)
+        if (key !in json) error("$key is not a key in ${json.keys}")
+        return json.getNumber(key).toFloat()
     }
 
     override fun decodeInlineElement(descriptor: SerialDescriptor, index: Int): Decoder {
@@ -58,11 +68,15 @@ internal class JsonCompositeDecoder<T>(
     }
 
     override fun decodeIntElement(descriptor: SerialDescriptor, index: Int): Int {
-        return json.getInt(getKey(descriptor, index))
+        val key = getKey(descriptor, index)
+        if (key !in json) error("$key is not a key in ${json.keys}")
+        return json.getInt(key)
     }
 
     override fun decodeLongElement(descriptor: SerialDescriptor, index: Int): Long {
-        return json.getLong(getKey(descriptor, index))
+        val key = getKey(descriptor, index)
+        if (key !in json) error("$key is not a key in ${json.keys}")
+        return json.getLong(key)
     }
 
     @ExperimentalSerializationApi
@@ -81,15 +95,21 @@ internal class JsonCompositeDecoder<T>(
     }
 
     override fun decodeShortElement(descriptor: SerialDescriptor, index: Int): Short {
-        return json.getInt(getKey(descriptor, index)).toShort()
+        val key = getKey(descriptor, index)
+        if (key !in json) error("$key is not a key in ${json.keys}")
+        return json.getInt(key).toShort()
     }
 
     override fun decodeStringElement(descriptor: SerialDescriptor, index: Int): String {
-        return json.getString(getKey(descriptor, index))
+        val key = getKey(descriptor, index)
+        if (key !in json) error("$key is not a key in ${json.keys}")
+        return json.getString(key)
     }
 
     fun decodeByteArrayElement(descriptor: SerialDescriptor, index: Int): ByteArray {
-        val binary = json.getBinary(getKey(descriptor, index))
+        val key = getKey(descriptor, index)
+        if (key !in json) error("$key is not a key in ${json.keys}")
+        val binary = json.getBinary(key)
         if (binary.type != BsonBinaryType.GENERIC)
             throw IllegalArgumentException("Expected generic binary, got ${binary.type}")
         return binary.value
