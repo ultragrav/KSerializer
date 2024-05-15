@@ -16,7 +16,8 @@ import net.ultragrav.kserializer.json.JsonObject
 @OptIn(ExperimentalSerializationApi::class)
 internal class JsonCompositeDecoder<T>(
     override val serializersModule: SerializersModule,
-    val json: JsonIndexable<T>
+    val json: JsonIndexable<T>,
+    private val sequential: Boolean = true
 ) : CompositeDecoder {
     @Suppress("UNCHECKED_CAST")
     val getKey: (SerialDescriptor, Int) -> T = when (json) {
@@ -24,7 +25,7 @@ internal class JsonCompositeDecoder<T>(
         is JsonArray -> { _, index -> index as T }
     }
 
-    override fun decodeSequentially(): Boolean = true
+    override fun decodeSequentially(): Boolean = sequential
 
     override fun decodeBooleanElement(descriptor: SerialDescriptor, index: Int): Boolean {
         val key = getKey(descriptor, index)
@@ -54,6 +55,11 @@ internal class JsonCompositeDecoder<T>(
     private var nextElement = 0
     override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
         if (nextElement >= descriptor.elementsCount) return CompositeDecoder.DECODE_DONE
+        val key = getKey(descriptor, nextElement)
+        if (key !in json && descriptor.isElementOptional(nextElement)) {
+            nextElement++ // Skip optional and un-found element
+            return decodeElementIndex(descriptor)
+        }
         return nextElement++
     }
 

@@ -17,6 +17,7 @@ dependencies {
     api("net.ultragrav", "Serializer", "1.2.20")
 
     api("org.jetbrains.kotlinx", "kotlinx-serialization-core", "1.6.0")
+//    api("org.jetbrains.kotlinx", "kotlinx-serialization-json", "1.6.0")
 
     testImplementation(kotlin("test"))
 }

@@ -1,16 +1,14 @@
 package net.ultragrav.kserializer.kotlinx
 
-import kotlinx.serialization.DeserializationStrategy
-import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.*
 import kotlinx.serialization.builtins.ByteArraySerializer
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.StructureKind
+import kotlinx.serialization.descriptors.elementNames
 import kotlinx.serialization.encoding.CompositeDecoder
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.serializer
 import net.ultragrav.kserializer.json.BsonBinaryType
-import net.ultragrav.kserializer.json.JsonArray
 import net.ultragrav.kserializer.json.JsonIndexable
 import net.ultragrav.kserializer.json.JsonObject
 import net.ultragrav.kserializer.util.toUUID
@@ -25,19 +23,22 @@ internal class JsonDecoder<T>(
     private fun getKeyOrDefault(): T {
         return key ?: json.defaultKey
     }
-    
+
     override fun beginStructure(descriptor: SerialDescriptor): CompositeDecoder {
         return when (descriptor.kind) {
             StructureKind.LIST, StructureKind.MAP -> {
+                val key = getKeyOrDefault()
+                if (key !in json) error("$key is not a key in ${json.keys}")
                 JsonCompositeDecoder(serializersModule, json.getArray(getKeyOrDefault()))
             }
 
             else -> {
-                if (key == null) {
-                    JsonCompositeDecoder(serializersModule, json as JsonObject)
-                } else {
-                    JsonCompositeDecoder(serializersModule, json.getObject(key))
+                val obj = if (key == null) json as JsonObject
+                else json.getObject(key)
+                val sequential = descriptor.elementNames.all {
+                    it in obj
                 }
+                JsonCompositeDecoder(serializersModule, obj, sequential)
             }
         }
     }
