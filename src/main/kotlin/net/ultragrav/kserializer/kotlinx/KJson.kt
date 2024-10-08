@@ -18,10 +18,14 @@ class KJson(val module: SerializersModule = defaultModule) {
         }
         val DEFAULT = KJson(defaultModule)
 
-        fun encodeToByteArray(obj: Any): ByteArray = DEFAULT.encodeToByteArray(obj)
+        inline fun <reified T> encodeToByteArray(obj: T): ByteArray = DEFAULT.encodeToByteArray<T>(obj)
         inline fun <reified T> decodeFromByteArray(bytes: ByteArray): T = DEFAULT.decodeFromByteArray(bytes)
-        fun encodeToByteArray(module: SerializersModule, obj: Any): ByteArray = KJson(module).encodeToByteArray(obj)
-        inline fun <reified T> decodeFromByteArray(module: SerializersModule, bytes: ByteArray): T = KJson(module).decodeFromByteArray(bytes)
+        fun <T> encodeToByteArray(serializer: SerializationStrategy<T>, obj: T): ByteArray = DEFAULT.encodeToByteArray(serializer, obj)
+        fun <T> decodeFromByteArray(deserializer: DeserializationStrategy<T>, bytes: ByteArray): T = DEFAULT.decodeFromByteArray(deserializer, bytes)
+        inline fun <reified T> encode(obj: T): JsonObject = DEFAULT.encode<T>(obj)
+        inline fun <reified T> decode(json: JsonObject): T = DEFAULT.decode<T>(json)
+        fun <T> encode(serializer: SerializationStrategy<T>, obj: T): JsonObject = DEFAULT.encode(serializer, obj)
+        fun <T> decode(deserializer: DeserializationStrategy<T>, json: JsonObject): T = DEFAULT.decode(deserializer, json)
     }
 
     fun <T> encode(serializer: SerializationStrategy<T>, obj: T): JsonObject {
