@@ -10,7 +10,7 @@ import net.ultragrav.kserializer.kotlinx.KJson.Companion.defaultModule
 import net.ultragrav.serializer.GravSerializer
 import java.util.*
 
-class KJson(val module: SerializersModule) {
+class KJson(val module: SerializersModule = defaultModule) {
     companion object {
         val defaultModule = SerializersModule {
             contextual(Date::class, DateSerializer)
@@ -53,12 +53,4 @@ class KJson(val module: SerializersModule) {
 
     inline fun <reified T> decodeFromByteArray(bytes: ByteArray): T =
         decodeFromByteArray(module.serializer(), bytes)
-}
-
-fun KJson(module: SerializersModuleBuilder.() -> Unit): KJson {
-    val m = SerializersModule {
-        include(defaultModule)
-        module()
-    }
-    return KJson(m)
 }
