@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "net.ultragrav"
-version = "1.1.5"
+version = "1.1.6"
 
 repositories {
     mavenCentral()
@@ -15,10 +15,8 @@ repositories {
 
 dependencies {
     api("net.ultragrav", "Serializer", "1.2.20")
-
     api("org.jetbrains.kotlinx", "kotlinx-serialization-core", "1.6.0")
-//    api("org.jetbrains.kotlinx", "kotlinx-serialization-json", "1.6.0")
-
+    api("org.jetbrains.kotlinx", "kotlinx-serialization-json", "1.6.0")
     testImplementation(kotlin("test"))
 }
 
