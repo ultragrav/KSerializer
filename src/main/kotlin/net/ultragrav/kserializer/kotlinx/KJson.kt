@@ -16,6 +16,12 @@ class KJson(val module: SerializersModule = defaultModule) {
             contextual(Date::class, DateSerializer)
             contextual(UUID::class, UUIDSerializer)
         }
+        val DEFAULT = KJson(defaultModule)
+
+        fun encodeToByteArray(obj: Any): ByteArray = DEFAULT.encodeToByteArray(obj)
+        inline fun <reified T> decodeFromByteArray(bytes: ByteArray): T = DEFAULT.decodeFromByteArray(bytes)
+        fun encodeToByteArray(module: SerializersModule, obj: Any): ByteArray = KJson(module).encodeToByteArray(obj)
+        inline fun <reified T> decodeFromByteArray(module: SerializersModule, bytes: ByteArray): T = KJson(module).decodeFromByteArray(bytes)
     }
 
     fun <T> encode(serializer: SerializationStrategy<T>, obj: T): JsonObject {
