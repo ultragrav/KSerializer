@@ -1,36 +1,19 @@
+import kotlinx.serialization.Serializable
 import net.ultragrav.kserializer.Serializers
 import net.ultragrav.kserializer.Wrapper
 import net.ultragrav.kserializer.json.JsonObject
 import net.ultragrav.kserializer.json.JsonType
+import net.ultragrav.kserializer.kotlinx.KJson
 
-class TestWrapper(data: JsonObject) : Wrapper(data) {
-    var test by string("Test")
-    var enum by enum<TestEnum>(TestEnum.TEST1)
-    val wrapper by wrapper(::OtherWrapper)
-    val wrapperList by list(::OtherWrapper)
-}
-
-class OtherWrapper(data: JsonObject) : Wrapper(data) {
-    var other by string("Other").cache()
-    val list by list(Serializers.STRING)
-}
-
-enum class TestEnum {
-    TEST1
+@Serializable
+class VaultData {
+    val vaults: MutableMap<String, Array<ByteArray?>> = mutableMapOf()
 }
 
 fun main() {
-    val testList = mutableListOf<String>()
-    testList.add(0, "Hello")
-    // Did you throw an exception?
-
-    val test = TestWrapper(JsonObject())
-
-    test.test = "Hello"
-    test.wrapper.other = "World"
-    test.enum = TestEnum.TEST1
-    test.wrapper.list.add("Hello")
-    test.wrapperList.add(OtherWrapper(JsonObject()).apply { other = "World" })
-
-    println(test.data)
+    val vaultData = VaultData()
+    vaultData.vaults["test"] = arrayOf(byteArrayOf(1, 2, 3), null, byteArrayOf(4, 5, 6))
+    val json = KJson.encode(vaultData)
+    println(json.toString())
+    val decoded = KJson.decode<VaultData>(json)
 }
