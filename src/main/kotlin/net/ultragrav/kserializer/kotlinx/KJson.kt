@@ -10,12 +10,13 @@ import net.ultragrav.kserializer.kotlinx.KJson.Companion.defaultModule
 import net.ultragrav.serializer.GravSerializer
 import java.util.*
 
-class KJson(val module: SerializersModule = defaultModule) {
+class KJson(var module: SerializersModule = defaultModule) {
     companion object {
         val defaultModule = SerializersModule {
             contextual(Date::class, DateSerializer)
             contextual(UUID::class, UUIDSerializer)
         }
+
         val DEFAULT = KJson(defaultModule)
 
         inline fun <reified T> encodeToByteArray(obj: T): ByteArray = DEFAULT.encodeToByteArray<T>(obj)
