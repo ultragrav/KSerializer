@@ -11,6 +11,7 @@ import kotlinx.serialization.serializer
 import net.ultragrav.kserializer.json.JsonArray
 import net.ultragrav.kserializer.json.JsonIndexable
 import net.ultragrav.kserializer.json.JsonObject
+import net.ultragrav.kserializer.json.JsonType
 
 @OptIn(ExperimentalSerializationApi::class)
 internal class JsonCompositeEncoder<T>(
@@ -76,8 +77,11 @@ internal class JsonCompositeEncoder<T>(
         serializer: SerializationStrategy<T>,
         value: T?
     ) {
-        if (value == null) return
-        encodeSerializableElement(descriptor, index, serializer, value)
+        if (value == null) {
+            json[getKey(descriptor, index), JsonType.NULL] = null
+        } else {
+            encodeSerializableElement(descriptor, index, serializer, value)
+        }
     }
 
     override fun <T> encodeSerializableElement(

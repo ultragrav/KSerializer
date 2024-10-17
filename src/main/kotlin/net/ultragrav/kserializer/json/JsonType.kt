@@ -10,7 +10,7 @@ interface JsonType<T> : JsonDataSerializer<T> {
     companion object {
         val NULL = object : JsonType<Void?> {
             override fun <I> write(indexable: JsonIndexable<I>, index: I, value: Void?): Any? {
-                return indexable.remove(index)
+                return indexable.setNull(index, null)
             }
 
             override fun <I> read(indexable: JsonIndexable<I>, index: I): Void? {

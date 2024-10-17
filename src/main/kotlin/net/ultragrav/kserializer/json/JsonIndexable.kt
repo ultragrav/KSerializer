@@ -32,23 +32,25 @@ sealed interface JsonIndexable<T> {
     fun getLong(key: T): Long
     fun setLong(key: T, long: Long): Any?
 
+    fun getNull(key: T): Any?
+    fun setNull(key: T): Any?
+
     fun type(key: T): JsonType<*>
     operator fun <R> get(key: T, type: JsonType<R>): R {
         return type.read(this, key)
     }
+
     @Suppress("UNCHECKED_CAST")
     operator fun <R> get(key: T): R {
         return get(key, type(key)) as R
     }
+
     operator fun <R> set(key: T, type: JsonType<R>, value: R) {
         type.write(this, key, value)
     }
+
     operator fun set(key: T, value: Any?) {
-        if (value == null) {
-            remove(key)
-        } else {
-            set(key, JsonType.of(value), value)
-        }
+        set(key, JsonType.of(value), value)
     }
 
     fun copy(): JsonIndexable<T>

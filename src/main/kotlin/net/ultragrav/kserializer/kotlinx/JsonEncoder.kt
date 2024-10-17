@@ -95,6 +95,7 @@ internal class JsonEncoder<T>(
 
     @ExperimentalSerializationApi
     override fun encodeNull() {
+        json.setNull(getKeyOrDefault())
     }
 
     override fun encodeShort(value: Short) {

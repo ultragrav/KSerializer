@@ -10,7 +10,7 @@ import java.util.*
 import java.util.concurrent.locks.ReentrantReadWriteLock
 
 class JsonObject : JsonIndexable<String>, GravSerializable {
-    private val backingMap: LinkedHashMap<String, Any>
+    private val backingMap: LinkedHashMap<String, Any?>
 
     override val size get() = readLocked { backingMap.size }
     override val keys get() = readLocked { backingMap.keys }
@@ -41,10 +41,10 @@ class JsonObject : JsonIndexable<String>, GravSerializable {
         }
     }
 
-    private fun <T : Any> internalSet(key: String, obj: T): Any? =
+    private fun <T : Any?> internalSet(key: String, obj: T): Any? =
         writeLocked { return backingMap.put(key, obj) }
 
-    private fun <T : Any> internalGet(key: String): T {
+    private fun <T : Any?> internalGet(key: String): T {
         @Suppress("UNCHECKED_CAST")
         return readLocked { backingMap[key] as T }
     }
@@ -75,6 +75,9 @@ class JsonObject : JsonIndexable<String>, GravSerializable {
 
     override fun getLong(key: String): Long = internalGet(key)
     override fun setLong(key: String, long: Long): Any? = internalSet(key, long)
+
+    override fun getNull(key: String): Any? = internalGet(key)
+    override fun setNull(key: String): Any? = internalSet(key, null)
 
     override fun type(key: String): JsonType<*> = readLocked {
         JsonType.of(backingMap[key])
@@ -131,6 +134,7 @@ class JsonObject : JsonIndexable<String>, GravSerializable {
             first = false
             builder.append("\"$key\":")
             when (value) {
+                null -> builder.append("null")
                 is String -> builder.append("\"$value\"")
                 is JsonObject -> builder.append(value.toString())
                 is JsonArray -> builder.append(value.toString())
