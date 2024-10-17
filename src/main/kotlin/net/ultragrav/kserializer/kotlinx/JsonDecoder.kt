@@ -103,8 +103,11 @@ internal class JsonDecoder<T>(
         // it will only be null if the object is empty or includes only 1 null.
         val keyOrDefault = getKeyOrDefault()
         val normalCondition = keyOrDefault in json && json.type(keyOrDefault) != JsonType.NULL
-        val noKeyCondition = key == null && json.size == 1 && json.type(json.defaultKey) != JsonType.NULL
-        return normalCondition || noKeyCondition
+        if (normalCondition) return true
+        if (key != null) return false
+        val defaultKey = json.defaultKey
+        if (defaultKey in json) return json.type(defaultKey) != JsonType.NULL
+        return json.size > 0
     }
 
     @ExperimentalSerializationApi
