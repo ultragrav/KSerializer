@@ -8,10 +8,7 @@ import kotlinx.serialization.encoding.CompositeDecoder
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.serializer
-import net.ultragrav.kserializer.json.BsonBinaryType
-import net.ultragrav.kserializer.json.JsonArray
-import net.ultragrav.kserializer.json.JsonIndexable
-import net.ultragrav.kserializer.json.JsonObject
+import net.ultragrav.kserializer.json.*
 
 @OptIn(ExperimentalSerializationApi::class)
 internal class JsonCompositeDecoder<T>(
@@ -92,7 +89,8 @@ internal class JsonCompositeDecoder<T>(
         deserializer: DeserializationStrategy<T?>,
         previousValue: T?
     ): T? {
-        return if (json.contains(getKey(descriptor, index))) {
+        val key = getKey(descriptor, index)
+        return if (key in json && json.type(key) != JsonType.NULL) {
             val decoder = JsonDecoder(serializersModule, json, getKey(descriptor, index))
             decoder.decodeSerializableValue(deserializer)
         } else {

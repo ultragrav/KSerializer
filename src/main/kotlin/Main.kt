@@ -9,11 +9,3 @@ import net.ultragrav.kserializer.kotlinx.KJson
 class VaultData {
     val vaults: MutableMap<String, Array<ByteArray?>> = mutableMapOf()
 }
-
-fun main() {
-    val vaultData = VaultData()
-    vaultData.vaults["test"] = arrayOf(byteArrayOf(1, 2, 3), null, byteArrayOf(4, 5, 6))
-    val json = KJson.encode(vaultData)
-    println(json.toString())
-    val decoded = KJson.decode<VaultData>(json)
-}

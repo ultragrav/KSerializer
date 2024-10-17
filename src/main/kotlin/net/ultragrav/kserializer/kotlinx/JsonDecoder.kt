@@ -11,6 +11,7 @@ import kotlinx.serialization.modules.SerializersModule
 import net.ultragrav.kserializer.json.BsonBinaryType
 import net.ultragrav.kserializer.json.JsonIndexable
 import net.ultragrav.kserializer.json.JsonObject
+import net.ultragrav.kserializer.json.JsonType
 import net.ultragrav.kserializer.util.toUUID
 import java.util.*
 
@@ -99,8 +100,11 @@ internal class JsonDecoder<T>(
     override fun decodeNotNullMark(): Boolean {
         // The 2nd part of this is because structure encoding will just encode into the
         // current object (if key == null), and so when decoding a structure after this check,
-        // it will only be null if the object is empty.
-        return json.contains(getKeyOrDefault()) || (key == null && json.size > 0)
+        // it will only be null if the object is empty or includes only 1 null.
+        val keyOrDefault = getKeyOrDefault()
+        val normalCondition = keyOrDefault in json && json.type(keyOrDefault) != JsonType.NULL
+        val noKeyCondition = key == null && json.size == 1 && json.type(json.defaultKey) == JsonType.NULL
+        return normalCondition || noKeyCondition
     }
 
     @ExperimentalSerializationApi

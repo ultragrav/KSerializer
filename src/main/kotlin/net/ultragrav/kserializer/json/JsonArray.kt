@@ -146,7 +146,7 @@ class JsonArray : JsonIndexable<Int>, GravSerializable {
     }
 
     override fun contains(key: Int): Boolean {
-        return key in 0..<size && backingList[key] != null
+        return key in 0..<size
     }
 
 
