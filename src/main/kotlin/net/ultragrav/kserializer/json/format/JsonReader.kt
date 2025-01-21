@@ -3,12 +3,16 @@ package net.ultragrav.kserializer.json.format
 import net.ultragrav.kserializer.json.JsonArray
 import net.ultragrav.kserializer.json.JsonObject
 import java.io.Reader
+import java.nio.file.Files.readString
 
 class JsonReader(val reader: Reader) {
+
+    private var line: Int = 1
+    private var column: Int = 0
+
     fun read(): Any? {
         while (true) {
             val ch = nextNWSP()
-
             when (ch) {
                 '{' -> return readObject()
                 '[' -> return readArray()
@@ -35,15 +39,21 @@ class JsonReader(val reader: Reader) {
 
     private fun nextNWSP(): Char {
         while (true) {
+            column++
             val ch = reader.read().toChar()
             if (!ch.isWhitespace()) return ch
+            if (ch == '\n') {
+                line++
+                column = 0
+            }
         }
     }
 
     private fun expect(str: String) {
         for (ch in str) {
+            column++
             if (reader.read().toChar() != ch) {
-                throw IllegalStateException("Expected '$ch' but got '$ch'")
+                throw IllegalStateException("Expected '$ch' but got '$ch', at line $line, column $column")
             }
         }
     }
@@ -54,6 +64,7 @@ class JsonReader(val reader: Reader) {
 
         while (true) {
             val ch = reader.read().toChar()
+            column++
 
             if (escaped) {
                 when (ch) {
@@ -71,7 +82,7 @@ class JsonReader(val reader: Reader) {
                         builder.append(hex.toString().toInt(16).toChar())
                     }
                     else -> {
-                        throw IllegalStateException("Invalid escape character: '$ch'")
+                        throw IllegalStateException("Invalid escape character: '$ch', at line $line, column $column")
                     }
                 }
                 escaped = false
@@ -96,7 +107,7 @@ class JsonReader(val reader: Reader) {
 
                     // Skip whitespace
                     if (nextNWSP() != ':') {
-                        throw IllegalStateException("Expected ':' but got '$ch'")
+                        throw IllegalStateException("Expected ':' but got '$ch', at line $line, column $column")
                     }
 
                     val value = read()
@@ -109,6 +120,17 @@ class JsonReader(val reader: Reader) {
     private fun readArray(): JsonArray {
         val array = JsonArray()
 
+        reader.mark(99)
+        val lineMark = line
+        val columnMark = column
+        val nextChar = nextNWSP()
+        line = lineMark
+        column = columnMark
+        reader.reset()
+        if (nextChar == ']') {
+            return array
+        }
+
         while (true) {
             val el = read()
             array.add(el)
@@ -116,7 +138,7 @@ class JsonReader(val reader: Reader) {
             when (val ch = nextNWSP()) {
                 ']' -> return array
                 ',' -> continue
-                else -> throw IllegalStateException("Expected ',' or ']' but got '$ch'")
+                else -> throw IllegalStateException("Expected ',' or ']' but got '$ch', at line $line, column $column")
             }
         }
     }
@@ -130,6 +152,7 @@ class JsonReader(val reader: Reader) {
                 break
             }
             builder.append(ch)
+            column++
             ch = reader.read().toChar()
         }
 
@@ -145,7 +168,7 @@ class JsonReader(val reader: Reader) {
         return try {
             str.toDouble()
         } catch (ex: NumberFormatException) {
-            throw IllegalArgumentException("Invalid JSON number")
+            throw IllegalArgumentException("Invalid JSON number, at line $line, column $column")
         }
     }
 }
