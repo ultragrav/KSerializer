@@ -5,8 +5,8 @@ import net.ultragrav.kserializer.json.JsonObject
 import java.io.Reader
 import java.nio.file.Files.readString
 
-class JsonReader(val reader: Reader) {
-
+class JsonReader(reader: Reader) {
+    val reader = reader.buffered()
     private var line: Int = 1
     private var column: Int = 0
 
@@ -149,10 +149,12 @@ class JsonReader(val reader: Reader) {
         var ch = current
         while (true) {
             if (ch != '-' && !Character.isDigit(ch) && ch != 'e' && ch != 'E' && ch != '+' && ch != '.') {
+                reader.reset()
                 break
             }
             builder.append(ch)
             column++
+            reader.mark(2)
             ch = reader.read().toChar()
         }
 
