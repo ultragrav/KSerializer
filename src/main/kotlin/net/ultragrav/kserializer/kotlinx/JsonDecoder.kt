@@ -7,6 +7,7 @@ import kotlinx.serialization.descriptors.StructureKind
 import kotlinx.serialization.descriptors.elementNames
 import kotlinx.serialization.encoding.CompositeDecoder
 import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.json.JsonNames
 import kotlinx.serialization.modules.SerializersModule
 import net.ultragrav.kserializer.json.BsonBinaryType
 import net.ultragrav.kserializer.json.JsonIndexable
@@ -71,7 +72,27 @@ internal class JsonDecoder<T>(
     override fun decodeEnum(enumDescriptor: SerialDescriptor): Int {
         val key = getKeyOrDefault()
         if (key !in json) error("$key is not a key in ${json.keys}")
-        return enumDescriptor.getElementIndex(json.getString(getKeyOrDefault()))
+
+        val name = json.getString(getKeyOrDefault())
+
+        val res = enumDescriptor.getElementIndex(name)
+        if (res != CompositeDecoder.UNKNOWN_NAME) {
+            return res
+        }
+
+        val idxToNames = (0 until enumDescriptor.elementsCount)
+            .associateWith { enumDescriptor.getElementAnnotations(it)
+                .filterIsInstance<JsonNames>()
+                .flatMap { a -> a.names.toList() }
+            }
+
+        for ((idx, names) in idxToNames) {
+            if (name in names) {
+                return idx
+            }
+        }
+
+        error("Enum value '$name' not found in ${enumDescriptor.serialName}")
     }
 
     override fun decodeFloat(): Float {
